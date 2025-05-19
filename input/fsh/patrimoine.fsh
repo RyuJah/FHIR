@@ -68,7 +68,7 @@ Description: "Salle de soin située dans le Bâtiment A."
 * partOf = Reference(BuildingA)
 
 // =======================
-// Instance : Infirmier 1
+// Instance : Infirmier 1 (générique)
 // =======================
 Instance: Nurse1
 InstanceOf: Practitioner
@@ -79,7 +79,7 @@ Description: "Infirmier travaillant dans la Salle 101."
 * name[0].given[0] = "Jean"
 
 // =======================
-// Instance : Organisation Hospitalière
+// Instance : Organisation Hospitalière (générique)
 // =======================
 Instance: HospitalOrg
 InstanceOf: Organization
