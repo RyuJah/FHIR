@@ -1,0 +1,5 @@
+<menu>
+    <title>Menu</title>
+    <entry file="index.html" title="Accueil"/>
+    <entry file="patient-biography.html" title="Biographie de Rayan"/>
+</menu>
