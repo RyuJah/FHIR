@@ -1,38 +1,23 @@
-# Gestion du patrimoine hospitalier
+# Guide Patrimoine FHIR
 
-Ce projet illustre la modélisation de la gestion du patrimoine hospitalier à l’aide de profils FHIR personnalisés.
+Bienvenue dans le guide d'implémentation FHIR dédié à la gestion du patrimoine hospitalier.
 
-## 🏢 Bâtiments hospitaliers
+Ce guide propose une modélisation structurée des ressources clés du système hospitalier, en conformité avec le standard HL7® FHIR R5. Il vise à faciliter l'interopérabilité entre les systèmes d'information de santé, en s'appuyant sur des profils personnalisés adaptés au contexte français (RPPS, structures, affectations...).
 
-Les bâtiments sont représentés par des ressources `Location` profilées via `HospitalBuilding`.  
-Chaque bâtiment a un nom, un statut actif, et un type physique `building`.
+## Ressources couvertes
 
-### Exemples :
-- Hôpital Principal
-- Bâtiment Nord
+- **Practitioner** : professionnels de santé enregistrés dans le RPPS, avec profil `ISISPractitioner`.
+- **PractitionerRole** : affectation des soignants à une structure et un lieu, avec profil `ISISPractitionerRole`.
+- **Organization** : structure de soins (ex. CHU, clinique, cabinet), identifiée par un SIRET, avec profil `ISISOrganization`.
+- **Location** : lieu d’exercice (cabinet, bâtiment, service hospitalier), avec profil `ISISLocation`.
 
-## 🏥 Salles de soin
+## Objectifs du guide
 
-Les salles sont aussi des `Location`, mais rattachées à un bâtiment (via `partOf`) et de type `room`.  
-Elles sont représentées par le profil `CareRoom`.
+- Fournir une base de modélisation commune pour les établissements de santé
+- Documenter les contraintes minimales pour chaque type de ressource
+- Proposer des exemples réalistes et réutilisables
+- Soutenir les équipes projets dans leurs démarches d’implémentation FHIR
 
-### Exemples :
-- Salle de pansement A
-- Salle d'urgence B
+## Contexte d'utilisation
 
-## 🧑‍⚕️ Affectation des soignants
-
-Les affectations sont gérées avec la ressource `PractitionerRole`, profilée via `CareAssignment`.  
-On y associe un professionnel (`Practitioner`) à une salle ou un bâtiment, avec sa spécialité et son organisation.
-
-### Exemples :
-- Infirmière affectée à la Salle A
-- Médecin généraliste affecté à la Salle B
-
----
-
-## Objectifs pédagogiques
-
-- Illustrer la structuration des ressources patrimoniales hospitalières
-- Montrer l'utilisation de `Location` dans différents contextes
-- Explorer l'association entre professionnels et lieux de soins
+Ce guide s'inscrit dans le cadre de la digitalisation du système de santé et s’adresse aux éditeurs de logiciels, établissements publics ou privés, et aux intégrateurs souhaitant structurer leurs données FHIR autour des affectations de soignants, des lieux et des structures hospitalières.
