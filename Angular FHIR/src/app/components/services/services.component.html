@@ -1,0 +1,24 @@
+<form #templateForm="ngForm" (ngSubmit)="onTemplateSubmit(templateForm)">
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput name="name" ngModel required minlength="3">
+    <mat-error *ngIf="templateForm.controls.name?.errors?.required">
+      Name is required.
+    </mat-error>
+    <mat-error *ngIf="templateForm.controls.name?.errors?.minlength">
+      Name must be at least 3 characters long.
+    </mat-error>
+  </mat-form-field>
+
+<mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput name="email" ngModel required email>
+    <mat-error *ngIf="templateForm.controls.email?.errors?.required">
+      Email is required.
+    </mat-error>
+    <mat-error *ngIf="templateForm.controls.email?.errors?.email">
+      Please enter a valid email address.
+    </mat-error>
+  </mat-form-field>
+  <button mat-raised-button color="primary" type="submit" [disabled]="!templateForm.valid">Submit</button>
+</form>
