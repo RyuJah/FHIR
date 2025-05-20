@@ -6,7 +6,6 @@ import { DoctorsComponent } from './components/doctors/doctors.component';
 import { ContactComponent } from './components/contact/contact.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
-import { HospitalMapComponent } from './hospital-map/hospital-map.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -15,7 +14,6 @@ export const routes: Routes = [
   { path: 'contact', component: ContactComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'hopitalComponent', component: HospitalMapComponent },
   { path: '**', redirectTo: '' }
 ];
 
