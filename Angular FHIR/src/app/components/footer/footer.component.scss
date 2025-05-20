@@ -1,0 +1,118 @@
+.footer {
+  background-color: #2c3e50;
+  color: #fff;
+  padding: 70px 0 0;
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+  
+  .footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+    margin-bottom: 50px;
+  }
+  
+  .footer-col {
+    h3 {
+      color: #fff;
+      font-size: 1.3rem;
+      margin-bottom: 25px;
+      position: relative;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background-color: #2c7be5;
+      }
+    }
+  }
+  
+  .footer-logo {
+    h2 {
+      color: #fff;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+  }
+  
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 15px;
+    
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: #fff;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: #2c7be5;
+      }
+    }
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    li {
+      margin-bottom: 12px;
+      
+      a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+        
+        &:hover {
+          color: #2c7be5;
+        }
+      }
+    }
+  }
+  
+  .contact-info {
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      
+      i {
+        color: #2c7be5;
+        margin-top: 4px;
+      }
+    }
+  }
+  
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 0;
+    text-align: center;
+    
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+  }
+}

@@ -1,0 +1,79 @@
+<div class="container">
+  <h2>Formulaire Réactif</h2>
+  
+  <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="form">
+    <div class="form-group">
+      <label for="name">Nom</label>
+      <input 
+        type="text" 
+        id="name" 
+        formControlName="name" 
+        [class.is-invalid]="isFieldInvalid('name')"
+      >
+      <div *ngIf="isFieldInvalid('name')" class="error-message">
+        {{ getErrorMessage('name') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        id="email" 
+        formControlName="email" 
+        [class.is-invalid]="isFieldInvalid('email')"
+      >
+      <div *ngIf="isFieldInvalid('email')" class="error-message">
+        {{ getErrorMessage('email') }}
+      </div>
+    </div>
+    
+    <button type="submit" class="btn">Soumettre</button>
+    
+    <div *ngIf="formStatus() !== ''" class="status-message" [class.success]="formStatus().includes('succès')">
+      {{ formStatus() }}
+    </div>
+  </form>
+  
+  <h2>Formulaire Basé sur Template</h2>
+  
+  <form #templateForm="ngForm" (ngSubmit)="onTemplateSubmit(templateForm)" class="form">
+    <div class="form-group">
+      <label for="template-name">Nom</label>
+      <input 
+        type="text" 
+        id="template-name" 
+        name="name" 
+        ngModel 
+        required 
+        minlength="3" 
+        #nameModel="ngModel" 
+        [class.is-invalid]="nameModel.invalid && (nameModel.touched || templateForm.submitted)"
+      >
+      <div *ngIf="nameModel.invalid && (nameModel.touched || templateForm.submitted)" class="error-message">
+        <div *ngIf="nameModel.errors?.['required']">Le nom est requis.</div>
+        <div *ngIf="nameModel.errors?.['minlength']">Le nom doit contenir au moins 3 caractères.</div>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="template-email">Email</label>
+      <input 
+        type="email" 
+        id="template-email" 
+        name="email" 
+        ngModel 
+        required 
+        email 
+        #emailModel="ngModel" 
+        [class.is-invalid]="emailModel.invalid && (emailModel.touched || templateForm.submitted)"
+      >
+      <div *ngIf="emailModel.invalid && (emailModel.touched || templateForm.submitted)" class="error-message">
+        <div *ngIf="emailModel.errors?.['required']">L'email est requis.</div>
+        <div *ngIf="emailModel.errors?.['email']">Veuillez entrer une adresse email valide.</div>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn">Soumettre</button>
+  </form>
+</div>
