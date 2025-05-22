@@ -49,8 +49,6 @@ Description: "Structure sanitaire identifiée par l’INSEE dans le contexte RPP
 * contact.address 1..1
 * contact.telecom 1..*
 
-
-
 // =======================
 // Profil : Lieu d’exercice ISIS (FHIR R5)
 // =======================
@@ -58,13 +56,26 @@ Profile: ISISLocation
 Parent: Location
 Id: ISIS-location
 Title: "Lieu d'exercice (profil ISIS)"
-Description: "Localisation physique d’un établissement ou cabinet médical (FHIR R5)."
+Description: "Localisation physique d’un établissement ou d'une unité fonctionnelle (profil ISIS - FHIR R5)."
 
-* status = #active
+// Définition du slicing
+* identifier ^slicing.discriminator.type = #pattern
+* identifier ^slicing.discriminator.path = "system"
+* identifier ^slicing.rules = #open
+
+// Slice "ufNumber"
+* identifier contains ufNumber 0..1
+* identifier[ufNumber].system = "http://our-organization/identifiers/uf-numero"
+* identifier[ufNumber].use = #official
+
 * name 1..1
 * type 1..1
+* type.text 0..1
 * mode = #instance
-* address 0..1
+* partOf 0..1
+
+
+
 
 
 // =======================
@@ -96,29 +107,29 @@ Description: "Centre Hospitalier Universitaire de Toulouse"
 * contact[0].telecom[1].value = "contact@chu-toulouse.fr"
 
 
-
-
 // =======================
-// Instance : Centre Médical Saint-Pierre (Location)
+// Instance : Service de Cardiologie (Location)
 // =======================
-Instance: CentreMedicalSaintPierre
+Instance: ServiceCardiologie
 InstanceOf: ISISLocation
-Title: "Centre Médical Saint-Pierre"
-Description: "Cabinet de soins ambulatoires à Lyon"
-* id = "loc-124"
-* status = #active
-* name = "Centre Médical Saint-Pierre"
+Title: "Service de Cardiologie"
+Description: "Unité fonctionnelle de cardiologie"
+* id = "29"
+* meta.versionId = "1"
+* meta.lastUpdated = "2025-05-21T21:36:17.639+00:00"
+* meta.source = "#d38feLRuV7lv4e2x"
+* identifier[ufNumber].use = #official
+* identifier[ufNumber].system = "http://our-organization/identifiers/uf-numero"
+* identifier[ufNumber].value = "7795"
+* name = "service de cardiologie"
 * mode = #instance
 * type[0].coding[0].system = "http://terminology.hl7.org/CodeSystem/location-type"
-* type[0].coding[0].code = #clinic
-* type[0].coding[0].display = "Ambulatory Clinic"
-* address[0].use = #work
-* address[0].line[0] = "45 avenue des Champs"
-* address[0].city = "Lyon"
-* address[0].postalCode = "69007"
-* address[0].country = "FR"
-* position.longitude = 4.845
-* position.latitude = 45.748
+* type[0].coding[0].code = #ws
+* type[0].coding[0].display = "Ward-Service"
+* type[0].text = "Unité Fonctionnelle"
+* partOf.reference = "Location/17"
+* partOf.display = "CHU Tounes"
+
 
 
 // =======================
