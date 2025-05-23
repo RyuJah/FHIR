@@ -189,6 +189,64 @@ getUFsByEtablissementAlternative(etablissementId: string): Observable<any[]> {
     })
   );
 }
+  updateEtablissement(etablissementId: string, etablissement: any): Observable<any> {
+    const url = `${this.baseUrl}/Location/${etablissementId}`;
+    
+    return this.http.put<any>(url, etablissement).pipe(
+      tap(() => {
+        console.log(`Établissement ${etablissementId} mis à jour avec succès`);
+      }),
+      catchError(error => {
+        console.error(`Erreur lors de la mise à jour de l'établissement ${etablissementId}:`, error);
+        
+        let errorMessage = `Échec de la mise à jour de l'établissement: ${error.message}`;
+        
+        if (error.status === 404) {
+          errorMessage = 'Établissement non trouvé sur le serveur';
+        } else if (error.status === 403) {
+          errorMessage = 'Droits insuffisants pour modifier cet établissement';
+        } else if (error.status === 400) {
+          errorMessage = 'Données invalides pour la mise à jour de l\'établissement';
+        } else if (error.status === 409) {
+          errorMessage = 'Conflit lors de la mise à jour (version obsolète)';
+        }
+        
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+   /**
+   * Met à jour une unité fonctionnelle existante
+   */
+  updateUniteFonctionnelle(ufId: string, uniteFonctionnelle: any): Observable<any> {
+    const url = `${this.baseUrl}/Location/${ufId}`;
+    
+    return this.http.put<any>(url, uniteFonctionnelle).pipe(
+      tap(() => {
+        console.log(`Unité fonctionnelle ${ufId} mise à jour avec succès`);
+      }),
+      catchError(error => {
+        console.error(`Erreur lors de la mise à jour de l'unité fonctionnelle ${ufId}:`, error);
+        
+        let errorMessage = `Échec de la mise à jour de l'unité fonctionnelle: ${error.message}`;
+        
+        if (error.status === 404) {
+          errorMessage = 'Unité fonctionnelle non trouvée sur le serveur';
+        } else if (error.status === 403) {
+          errorMessage = 'Droits insuffisants pour modifier cette unité fonctionnelle';
+        } else if (error.status === 400) {
+          errorMessage = 'Données invalides pour la mise à jour de l\'unité fonctionnelle';
+        } else if (error.status === 409) {
+          errorMessage = 'Conflit lors de la mise à jour (version obsolète)';
+        }
+        
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+
 
 
 

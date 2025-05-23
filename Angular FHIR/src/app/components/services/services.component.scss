@@ -2,7 +2,59 @@
 /* Styles pour le popup */
 /* Réinitialisation pour garantir que tout commence sans marges ni paddings */
 /* Styles pour le panneau latéral d'établissements et UF */
+.edit-mode-indicator {
+  margin-bottom: 1rem;
+}
 
+.edit-mode-indicator .alert {
+  padding: 0.75rem;
+  margin-bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+}
+
+.alert-info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.required {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.form-buttons .btn {
+  min-width: 150px;
+}
+
+.uf-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.uf-actions .btn {
+  font-size: 0.875rem;
+}
 .right-panel {
   display: flex;
   flex-direction: column;

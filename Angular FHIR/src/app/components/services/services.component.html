@@ -4,6 +4,7 @@
     <p>{{ popupMessage }}</p>
   </div>
 </div>
+
 <div class="page-container">
   <!-- Panneau latéral gauche -->
   <div class="side-panel left-panel">
@@ -22,10 +23,6 @@
   <!-- Contenu principal (formulaire) -->
   <div class="main-content">
     <h2>Créer une Unité Fonctionnelle</h2>
-    
-<!-- <div *ngIf="formStatus()" class="alert" [ngClass]="{'alert-success': formStatus().includes('succès'), 'alert-danger': formStatus().includes('erreur') || formStatus().includes('Erreur')}">
-  {{ formStatus() }}
-</div> -->
     
     <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="form">
       <div class="progress-bar">
@@ -55,7 +52,7 @@
               </div>
             </div>
            
-  <!-- UF Numérique unique -->
+            <!-- UF Numérique unique -->
             <div class="form-group">
               <label for="ufNumero">Numéro UF (unique)</label>
               <input 
@@ -68,8 +65,7 @@
               <div *ngIf="isFieldInvalid('ufNumero')" class="error-message">
                 {{ getErrorMessage('ufNumero') }}
               </div>
-              </div>
-            
+            </div>
             
             <!-- Description -->
             <div class="form-group">
@@ -113,10 +109,17 @@
                   </option>
                 </select>
                 
-                <button type="button" class="btn btn-secondary" (click)="toggleAddEtablissementForm()">
-                  {{ showAddEtablissementForm ? 'Annuler' : 'Nouvel établissement' }}
+                <button 
+                  type="button" 
+                  class="btn btn-secondary" 
+                  (click)="toggleAddEtablissementForm()" 
+                  [disabled]="isEditingEtablissement"
+                >
+                  <span *ngIf="showAddEtablissementForm && !isEditingEtablissement">Annuler</span>
+                  <span *ngIf="!showAddEtablissementForm || isEditingEtablissement">Nouvel établissement</span>
                 </button>
               </div>
+              
               <div *ngIf="isLoading" class="loading-message">
                 Chargement des établissements...
               </div>
@@ -131,12 +134,24 @@
               </div>
             </div>
             
-            <!-- Formulaire pour ajouter un nouvel établissement -->
+            <!-- Formulaire pour ajouter/modifier un établissement -->
             <div *ngIf="showAddEtablissementForm" class="add-etablissement-form">
-              <h4>Ajouter un nouvel établissement</h4>
+              <h4>
+                <i class="bi" [ngClass]="{'bi-pencil-square': isEditingEtablissement, 'bi-plus-circle': !isEditingEtablissement}"></i>
+                {{ isEditingEtablissement ? 'Modifier l\'établissement' : 'Ajouter un nouvel établissement' }}
+              </h4>
+              
+              <!-- Indicateur du mode édition -->
+              <div *ngIf="isEditingEtablissement" class="edit-mode-indicator">
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle"></i>
+                  Vous êtes en train de modifier un établissement existant.
+                </div>
+              </div>
+              
               <form [formGroup]="etablissementForm" (ngSubmit)="onAddEtablissement()" class="etablissement-form">
                 <div class="form-group">
-                  <label for="etabName">Nom de l'établissement</label>
+                  <label for="etabName">Nom de l'établissement <span class="required">*</span></label>
                   <input type="text" id="etabName" formControlName="name" required>
                   <div *ngIf="isFieldInvalid('name', etablissementForm)" class="error-message">
                     {{ getErrorMessage('name', etablissementForm) }}
@@ -144,13 +159,41 @@
                 </div>
                 
                 <div class="form-group">
+                  <label for="etabStatus">Statut</label>
+                  <select id="etabStatus" formControlName="status">
+                    <option value="active">Actif</option>
+                    <option value="suspended">Suspendu</option>
+                    <option value="inactive">Inactif</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabTypeCode">Type d'établissement</label>
+                  <select id="etabTypeCode" formControlName="typeCode">
+                    <option value="ho">Hôpital</option>
+                    <option value="ward">Service</option>
+                    <option value="dept">Département</option>
+                    <option value="room">Salle</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabAddressUse">Type d'adresse</label>
+                  <select id="etabAddressUse" formControlName="addressUse">
+                    <option value="work">Travail</option>
+                    <option value="temp">Temporaire</option>
+                    <option value="old">Ancienne</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
                   <label for="etabAddressLine">Adresse</label>
-                  <input type="text" id="etabAddressLine" formControlName="addressLine">
+                  <input type="text" id="etabAddressLine" formControlName="addressLine" placeholder="Numéro et nom de rue">
                 </div>
                 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="etabCity">Ville</label>
+                    <label for="etabCity">Ville <span class="required">*</span></label>
                     <input type="text" id="etabCity" formControlName="city" required>
                     <div *ngIf="isFieldInvalid('city', etablissementForm)" class="error-message">
                       {{ getErrorMessage('city', etablissementForm) }}
@@ -158,7 +201,7 @@
                   </div>
                   
                   <div class="form-group">
-                    <label for="etabPostalCode">Code postal</label>
+                    <label for="etabPostalCode">Code postal <span class="required">*</span></label>
                     <input type="text" id="etabPostalCode" formControlName="postalCode" required>
                     <div *ngIf="isFieldInvalid('postalCode', etablissementForm)" class="error-message">
                       {{ getErrorMessage('postalCode', etablissementForm) }}
@@ -166,12 +209,22 @@
                   </div>
                 </div>
                 
+                <div class="form-group">
+                  <label for="etabCountry">Pays</label>
+                  <input type="text" id="etabCountry" formControlName="country" value="FR">
+                </div>
+                
                 <div class="form-buttons">
                   <button type="button" class="btn btn-secondary" (click)="toggleAddEtablissementForm()">
-                    Annuler
+                    <i class="bi bi-x-circle"></i>
+                    {{ isEditingEtablissement ? 'Annuler la modification' : 'Annuler' }}
                   </button>
-                  <button type="submit" class="btn btn-primary" [disabled]="etablissementForm.invalid">
-                    Créer l'établissement
+                  
+                  <button type="submit" class="btn" 
+                          [ngClass]="{'btn-warning': isEditingEtablissement, 'btn-primary': !isEditingEtablissement}"
+                          [disabled]="etablissementForm.invalid">
+                    <i class="bi" [ngClass]="{'bi-check-circle': isEditingEtablissement, 'bi-plus-circle': !isEditingEtablissement}"></i>
+                    {{ isEditingEtablissement ? 'Modifier l\'établissement' : 'Créer l\'établissement' }}
                   </button>
                 </div>
               </form>
@@ -232,14 +285,10 @@
                 {{ getErrorMessage('addressUse') }}
               </div>
             </div>
-            
-          
           </div>
         </swiper-slide>
         
-
-        
-        <!-- Page 4: Récapitulatif et soumission -->
+        <!-- Page 3: Récapitulatif et soumission -->
         <swiper-slide>
           <div class="slide-content summary">
             <h3>Récapitulatif</h3>
@@ -250,8 +299,8 @@
                 <span class="label">Nom de l'UF:</span> 
                 <span class="value">{{ myForm.get('name')?.value }}</span>
               </div>
-               <div class="summary-item">
-                <span class="label">ZADIG</span> 
+              <div class="summary-item">
+                <span class="label">ZADIG:</span> 
                 <span class="value">{{ myForm.get('ufNumero')?.value }}</span>
               </div>
               
@@ -293,8 +342,6 @@
                 <span class="value">{{ myForm.get('roomNumber')?.value || 'Non spécifié' }}</span>
               </div>
             </div>
-            
-        
           </div>
         </swiper-slide>
       </swiper-container>
@@ -316,109 +363,111 @@
       </div>
     </form>
   </div>
-<!-- Panneau latéral droit : Liste des établissements et UF -->
-<div class="side-panel right-panel">
-  <div class="panel-header">
-    <h2>Établissements et Unités Fonctionnelles</h2>
-    <div class="search-container">
-      <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterList()">
-      <i class="bi bi-search search-icon"></i>
-    </div>
-  </div>
 
-  <div class="etablissement-list">
-    <div *ngIf="isLoadingEtablissements" class="loading-indicator">
-      <div class="spinner"></div>
-      <span>Chargement des établissements...</span>
-    </div>
-    
-    <div *ngIf="!isLoadingEtablissements && etablissementsList.length === 0" class="empty-state">
-      <i class="bi bi-building-x"></i>
-      <p>Aucun établissement trouvé</p>
-      <button class="btn btn-outline-primary" (click)="toggleAddEtablissementForm()">
-        <i class="bi bi-plus-circle"></i> Ajouter un établissement
-      </button>
+  <!-- Panneau latéral droit : Liste des établissements et UF -->
+  <div class="side-panel right-panel">
+    <div class="panel-header">
+      <h2>Établissements et Unités Fonctionnelles</h2>
+      <div class="search-container">
+        <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterList()">
+        <i class="bi bi-search search-icon"></i>
+      </div>
     </div>
 
-    <div *ngFor="let etab of filteredEtablissements" class="etablissement-card">
-      <div class="etablissement-header" (click)="toggleEtablissement(etab)">
-        <div class="etab-info">
-          <h3>{{ etab.name }}</h3>
-          <span class="etab-details">{{ getEtablissementAddress(etab) }}</span>
-        </div>
-        <div class="etab-status" [ngClass]="{'active': etab.status === 'active', 'inactive': etab.status === 'inactive', 'suspended': etab.status === 'suspended'}">
-          {{ getStatusLabel(etab.status) }}
-        </div>
-        <i class="bi" [ngClass]="{'bi-chevron-down': etab.expanded, 'bi-chevron-right': !etab.expanded}"></i>
+    <div class="etablissement-list">
+      <div *ngIf="isLoadingEtablissements" class="loading-indicator">
+        <div class="spinner"></div>
+        <span>Chargement des établissements...</span>
+      </div>
+      
+      <div *ngIf="!isLoadingEtablissements && etablissementsList.length === 0" class="empty-state">
+        <i class="bi bi-building-x"></i>
+        <p>Aucun établissement trouvé</p>
+        <button class="btn btn-outline-primary" (click)="toggleAddEtablissementForm()">
+          <i class="bi bi-plus-circle"></i> Ajouter un établissement
+        </button>
       </div>
 
-<div class="etablissement-actions">
-  <button class="btn btn-sm btn-outline-primary" (click)="selectEtablissement(etab)" title="Sélectionner cet établissement">
-    <i class="bi bi-check-circle"></i> Sélectionner
-  </button>
-  
-  <button class="btn btn-sm btn-outline-secondary" (click)="editEtablissement(etab)" title="Modifier cet établissement">
-    <i class="bi bi-pencil"></i> Éditer
-  </button>
-  
-  <button 
-    class="btn btn-sm"
-    [ngClass]="canDeleteEtablissement(etab) ? 'btn-outline-danger' : 'btn-outline-secondary'"
-    [title]="getDeleteEtablissementTooltip(etab)"
-    (click)="deleteEtablissement(etab)">
-    <i class="bi bi-trash"></i> 
-    <span *ngIf="!canDeleteEtablissement(etab)">🔒</span>
-    Supprimer
-  </button>
-</div>
-      
-      <!-- UF liées à l'établissement -->
-      <div *ngIf="etab.expanded" class="uf-container">
-        <div *ngIf="isLoadingUFs(etab.id)" class="loading-indicator sm">
-          <div class="spinner sm"></div>
-          <span>Chargement des UF...</span>
+      <div *ngFor="let etab of filteredEtablissements" class="etablissement-card">
+        <div class="etablissement-header" (click)="toggleEtablissement(etab)">
+          <div class="etab-info">
+            <h3>{{ etab.name }}</h3>
+            <span class="etab-details">{{ getEtablissementAddress(etab) }}</span>
+          </div>
+          <div class="etab-status" [ngClass]="{'active': etab.status === 'active', 'inactive': etab.status === 'inactive', 'suspended': etab.status === 'suspended'}">
+            {{ getStatusLabel(etab.status) }}
+          </div>
+          <i class="bi" [ngClass]="{'bi-chevron-down': etab.expanded, 'bi-chevron-right': !etab.expanded}"></i>
         </div>
-        
-        <div *ngIf="!isLoadingUFs(etab.id) && getUFsForEtablissement(etab.id).length === 0" class="empty-state sm">
-          <p>Aucune unité fonctionnelle trouvée</p>
-          <button class="btn btn-sm btn-outline-primary" (click)="createNewUF(etab)">
-            <i class="bi bi-plus-circle"></i> Nouvelle UF
+
+        <div class="etablissement-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="selectEtablissement(etab)" title="Sélectionner cet établissement">
+            <i class="bi bi-check-circle"></i> Sélectionner
+          </button>
+          
+          <button class="btn btn-sm btn-outline-secondary" (click)="editEtablissement(etab)" title="Modifier cet établissement">
+            <i class="bi bi-pencil"></i> Éditer
+          </button>
+          
+          <button 
+            class="btn btn-sm"
+            [ngClass]="canDeleteEtablissement(etab) ? 'btn-outline-danger' : 'btn-outline-secondary'"
+            [title]="getDeleteEtablissementTooltip(etab)"
+            (click)="deleteEtablissement(etab)">
+            <i class="bi bi-trash"></i> 
+            <span *ngIf="!canDeleteEtablissement(etab)">🔒</span>
+            Supprimer
           </button>
         </div>
         
-        <div *ngFor="let uf of getUFsForEtablissement(etab.id)" class="uf-card">
-          <div class="uf-info">
-            <div class="uf-title">
-              <h4>{{ uf.name }}</h4>
-              <span class="uf-numero">{{ getUFNumero(uf) }}</span>
-            </div>
-            <span class="uf-location" *ngIf="uf.description || getUFLocation(uf)">
-              <i class="bi bi-geo-alt"></i> {{ uf.description || getUFLocation(uf) }}
-            </span>
-            <div class="uf-status" [ngClass]="{'active': uf.status === 'active', 'inactive': uf.status === 'inactive', 'suspended': uf.status === 'suspended'}">
-              {{ getStatusLabel(uf.status) }}
-            </div>
-                  <div class="etablissement-actions">
-<button class="btn btn-sm btn-outline-primary " (click)="editEtablissement(etab)">
-          <i class="bi bi-pencil">éditer</i> 
-        </button>
-            <button class="btn btn-sm btn-outline-danger " (click)="deleteUF(uf)">
-          <i class="bi bi-pencil">supprimer</i> 
-        </button>
-         
+        <!-- UF liées à l'établissement -->
+        <div *ngIf="etab.expanded" class="uf-container">
+          <div *ngIf="isLoadingUFs(etab.id)" class="loading-indicator sm">
+            <div class="spinner sm"></div>
+            <span>Chargement des UF...</span>
           </div>
           
+          <div *ngIf="!isLoadingUFs(etab.id) && getUFsForEtablissement(etab.id).length === 0" class="empty-state sm">
+            <p>Aucune unité fonctionnelle trouvée</p>
+            <button class="btn btn-sm btn-outline-primary" (click)="createNewUF(etab)">
+              <i class="bi bi-plus-circle"></i> Nouvelle UF
+            </button>
+          </div>
+          
+          <div *ngFor="let uf of getUFsForEtablissement(etab.id)" class="uf-card">
+            <div class="uf-info">
+              <div class="uf-title">
+                <h4>{{ uf.name }}</h4>
+                <span class="uf-numero">{{ getUFNumero(uf) }}</span>
+              </div>
+              <span class="uf-location" *ngIf="uf.description || getUFLocation(uf)">
+                <i class="bi bi-geo-alt"></i> {{ uf.description || getUFLocation(uf) }}
+              </span>
+              <div class="uf-status" [ngClass]="{'active': uf.status === 'active', 'inactive': uf.status === 'inactive', 'suspended': uf.status === 'suspended'}">
+                {{ getStatusLabel(uf.status) }}
+              </div>
+              
+              <div class="uf-actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="editUF(uf)" title="Modifier cette UF">
+                  <i class="bi bi-pencil"></i> Éditer
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteUF(uf)" title="Supprimer cette UF">
+                  <i class="bi bi-trash"></i> Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel-footer">
-    <button class="btn btn-primary" (click)="toggleAddEtablissementForm()">
-      <i class="bi bi-plus-circle"></i> Nouvel établissement
-    </button>
-    <button class="btn btn-outline-secondary" (click)="refreshList()">
-      <i class="bi bi-arrow-clockwise"></i> Actualiser
-    </button>
+    <div class="panel-footer">
+      <button class="btn btn-primary" (click)="toggleAddEtablissementForm()">
+        <i class="bi bi-plus-circle"></i> Nouvel établissement
+      </button>
+      <button class="btn btn-outline-secondary" (click)="refreshList()">
+        <i class="bi bi-arrow-clockwise"></i> Actualiser
+      </button>
+    </div>
   </div>
 </div>

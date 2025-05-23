@@ -31,24 +31,26 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
   formSubmitted = signal<boolean>(false);
   currentSlide = 0;
   totalSlides = 3;
+  isEditingEtablissement = false;
+  editingEtablissementId: string | null = null;
   
   // Pour la gestion du carrousel
   slides = [
     {
       active: true,
-      imageUrl: 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500',
+      imageUrl: 'https://i.postimg.cc/nzpBhnGN/Whats-App-Image-2025-05-21-21-29-21-69e272ab.jpg',
       title: 'Unités Fonctionnelles',
       description: 'Gestion des services spécialisés'
     },
     {
       active: false,
-      imageUrl: 'https://images.unsplash.com/photo-1584982751601-97dcc096659c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500',
+      imageUrl: 'https://i.postimg.cc/rsdm8H3v/Whats-App-Image-2025-05-21-21-29-21-5e24d0c5.jpg',
       title: 'Organisation des soins',
       description: 'Optimisez le parcours patient'
     },
     {
       active: false,
-      imageUrl: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500',
+      imageUrl: 'https://i.postimg.cc/dQ9ndx78/Whats-App-Image-2025-05-21-21-29-21-fc451ace.jpg',
       title: 'Planification des ressources',
       description: 'Gestion efficace des espaces médicaux'
     }
@@ -302,7 +304,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   
   // Éditer un établissement
-  editEtablissement(etab: any) {
+   editEtablissement(etab: any) {
     // Remplir le formulaire d'établissement avec les données existantes
     this.etablissementForm.patchValue({
       name: etab.name,
@@ -315,11 +317,28 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       country: etab.address?.country || 'FR'
     });
     
-    // Afficher le formulaire d'ajout d'établissement (qui servira ici pour l'édition)
+    // Passer en mode édition
+    this.isEditingEtablissement = true;
+    this.editingEtablissementId = etab.id;
+    
+    // Afficher le formulaire d'établissement
     this.showAddEtablissementForm = true;
     
-    // Faire défiler la page pour afficher le formulaire si nécessaire
-    // Implementation à adapter selon votre interface
+    // Optionnel : faire défiler pour afficher le formulaire
+    setTimeout(() => {
+      const formElement = document.querySelector('.add-etablissement-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
+  // Méthode pour annuler l'édition
+  cancelEditEtablissement() {
+    this.isEditingEtablissement = false;
+    this.editingEtablissementId = null;
+    this.showAddEtablissementForm = false;
+    this.etablissementForm.reset();
   }
   
   // Voir les détails d'une UF
@@ -473,17 +492,40 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   
-  toggleAddEtablissementForm() {
+ toggleAddEtablissementForm() {
+  if (this.showAddEtablissementForm && this.isEditingEtablissement) {
+    // Si on est en mode édition et qu'on ferme, annuler l'édition
+    this.isEditingEtablissement = false;
+    this.editingEtablissementId = null;
+    this.showAddEtablissementForm = false;
+  } else {
+    // Comportement normal (ouverture/fermeture)
     this.showAddEtablissementForm = !this.showAddEtablissementForm;
-    if (!this.showAddEtablissementForm) {
-      this.etablissementForm.reset({
-        status: 'active',
-        typeCode: 'ho',
-        addressUse: 'work',
-        country: 'FR'
-      });
-    }
   }
+  
+  // TOUJOURS réinitialiser le formulaire complètement
+  this.etablissementForm.reset({
+    name: '',
+    status: 'active',
+    typeCode: 'ho',
+    addressUse: 'work',
+    addressLine: '',
+    city: '',
+    postalCode: '',
+    country: 'FR'
+  });
+  
+  // Réinitialiser les états d'édition
+  this.isEditingEtablissement = false;
+  this.editingEtablissementId = null;
+  
+  // Nettoyer complètement les états de validation
+  this.etablissementForm.markAsUntouched();
+  this.etablissementForm.markAsPristine();
+  Object.keys(this.etablissementForm.controls).forEach(key => {
+    this.etablissementForm.get(key)?.setErrors(null);
+  });
+}
   
   // Affiche un popup avec un message donné
   showPopupMessage(message: string, type: 'success' | 'error' | 'info' = 'success') {
@@ -632,11 +674,13 @@ private refreshEtablissementsList(): void {
 }  
 
 
+
   onAddEtablissement() {
     if (this.etablissementForm.valid) {
       // Création de la structure FHIR Location pour l'établissement
       const etablissement = {
         resourceType: 'Location',
+        id: this.editingEtablissementId,
         status: this.etablissementForm.get('status')?.value,
         name: this.etablissementForm.get('name')?.value,
         mode: 'instance',
@@ -657,12 +701,41 @@ private refreshEtablissementsList(): void {
           city: this.etablissementForm.get('city')?.value,
           postalCode: this.etablissementForm.get('postalCode')?.value,
           country: this.etablissementForm.get('country')?.value
-        }
-      };
+          },
+  managingOrganization: {
+  reference: 'Organization/7',
+  display: 'CHU de Toulouse'
+}
+    };
       
+     // Logique de sauvegarde (POST/PUT)
+    if (this.isEditingEtablissement && this.editingEtablissementId) {
+      // PUT - Mode édition
+      this.fhirService.updateEtablissement(this.editingEtablissementId, etablissement).subscribe({
+        next: (response) => {
+          console.log('Établissement mis à jour avec succès:', response);
+          this.formStatus.set('Établissement mis à jour avec succès !');
+          this.showPopupMessage('Établissement mis à jour avec succès !');
+          
+          // Mettre à jour les listes locales
+          this.updateLocalEtablissementLists(response);
+          
+          // Fermer le formulaire
+          this.toggleAddEtablissementForm();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour de l\'établissement:', error);
+          this.formStatus.set('Erreur lors de la mise à jour de l\'établissement. Veuillez réessayer.');
+          this.showPopupMessage('Erreur lors de la mise à jour de l\'établissement. Veuillez réessayer.', 'error');
+        }
+      });
+    } else {
+      // POST - Mode création
       this.fhirService.createEtablissement(etablissement).subscribe({
         next: (response) => {
           console.log('Établissement créé avec succès:', response);
+          this.formStatus.set('Établissement créé avec succès !');
+          this.showPopupMessage('Établissement créé avec succès !');
           
           // Ajouter à la liste locale du formulaire
           if (response && response.id) {
@@ -680,16 +753,8 @@ private refreshEtablissementsList(): void {
             this.myForm.get('etablissementId')?.setValue(response.id);
           }
           
-          this.showAddEtablissementForm = false;
-          this.etablissementForm.reset({
-            status: 'active',
-            typeCode: 'ho',
-            addressUse: 'work',
-            country: 'FR'
-          });
-          
-          this.formStatus.set('Établissement créé avec succès !');
-          this.showPopupMessage('Établissement créé avec succès !');
+          // Fermer le formulaire
+          this.toggleAddEtablissementForm();
         },
         error: (error) => {
           console.error('Erreur lors de la création de l\'établissement', error);
@@ -697,10 +762,30 @@ private refreshEtablissementsList(): void {
           this.showPopupMessage('Erreur lors de la création de l\'établissement. Veuillez réessayer.', 'error');
         }
       });
-    } else {
-      this.validateAllFormFields(this.etablissementForm);
     }
+  } else {
+    this.validateAllFormFields(this.etablissementForm);
   }
+}
+
+// Méthode utilitaire pour mettre à jour les listes locales lors de l'édition
+private updateLocalEtablissementLists(updatedEtablissement: any) {
+  // Mettre à jour dans la liste du select
+  const indexInEtablissements = this.etablissements.findIndex(etab => etab.id === updatedEtablissement.id);
+  if (indexInEtablissements !== -1) {
+    this.etablissements[indexInEtablissements] = updatedEtablissement;
+  }
+  
+  // Mettre à jour dans la liste du panneau latéral
+  const indexInEtablissementsList = this.etablissementsList.findIndex(etab => etab.id === updatedEtablissement.id);
+  if (indexInEtablissementsList !== -1) {
+    this.etablissementsList[indexInEtablissementsList] = {
+      ...updatedEtablissement,
+      expanded: this.etablissementsList[indexInEtablissementsList].expanded
+    };
+    this.filteredEtablissements = [...this.etablissementsList];
+  }
+}
   
   onSubmit(): void {
     this.formSubmitted.set(true);
