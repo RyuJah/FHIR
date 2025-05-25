@@ -8,7 +8,6 @@
   <div *ngIf="loadingError" class="error-container">
     Erreur lors du chargement des praticiens.
   </div>
-
   <!-- Tableau des praticiens -->
   <table *ngIf="!isLoading && !selectedPractitioner && practitioners.length > 0" 
          class="practitioners-table">
