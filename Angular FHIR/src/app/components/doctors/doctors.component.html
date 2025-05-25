@@ -1,48 +1,71 @@
-<div *ngIf="isLoading">Chargement des praticiens...</div>
-<div *ngIf="loadingError" class="text-danger">Erreur lors du chargement des praticiens.</div>
-
-<!-- Tableau affiché uniquement si aucun praticien n'est sélectionné -->
-<table *ngIf="!isLoading && !selectedPractitioner && practitioners.length > 0" class="table table-striped">
-  <thead>
-  <tr>
-    <th>Nom</th>
-    <th>Prénom</th>
-    <th>Téléphone</th>
-    <th>Email</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let p of practitioners" (click)="onSelectPractitioner(p)" style="cursor:pointer;">
-    <td>{{ p.family }}</td>
-    <td>{{ p.given }}</td>
-    <td>{{ p.phone || '-' }}</td>
-    <td>{{ p.email || '-' }}</td>
-  </tr>
-  </tbody>
-</table>
-<div *ngIf="!isLoading && !selectedPractitioner && practitioners.length === 0">Aucun praticien trouvé.</div>
-
-
-<!-- Détails du praticien sélectionné -->
-<div *ngIf="selectedPractitioner" class="practitioner-details mt-3">
-  <div class="practitioner-image">
-    <img *ngIf="selectedPractitioner.gender === 'female'" src="https://i.postimg.cc/pdc7ZyNn/female.png" alt="Photo du praticien" />
-    <img *ngIf="selectedPractitioner.gender === 'male'" src="https://i.postimg.cc/wx7469Cw/male.png" alt="Photo du praticien" />
-    <img *ngIf="selectedPractitioner.gender !== 'female' && selectedPractitioner.gender !== 'male'" src="https://i.postimg.cc/wx7469Cw/male.png" alt="Photo du praticien" />
+<div class="practitioners-container">
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    Chargement des praticiens...
   </div>
 
-  <div class="main-content">
-    <h5>Détails du praticien</h5>
-    <ul>
-      <li><strong>Nom :</strong> {{ selectedPractitioner.family }}</li>
-      <li><strong>Prénom :</strong> {{ selectedPractitioner.given }}</li>
-      <li><strong>Téléphone :</strong> {{ selectedPractitioner.phone || '-' }}</li>
-      <li><strong>Email :</strong> {{ selectedPractitioner.email || '-' }}</li>
-      <li><strong>Spécialité :</strong> {{ selectedPractitioner.specialty || '-' }}</li>
-      <li><strong>Date de naissance :</strong> {{ selectedPractitioner.birthDate || '-' }}</li>
-      <li><strong>Adresse :</strong> {{ selectedPractitioner.address || '-' }}</li>
-      <li><strong>Genre :</strong> {{ selectedPractitioner.gender || '-' }}</li>
-    </ul>
-    <button class="btn btn-secondary btn-sm" (click)="selectedPractitioner = null">Retour à la liste</button>
+  <!-- Erreur de chargement -->
+  <div *ngIf="loadingError" class="error-container">
+    Erreur lors du chargement des praticiens.
+  </div>
+
+  <!-- Tableau des praticiens -->
+  <table *ngIf="!isLoading && !selectedPractitioner && practitioners.length > 0" 
+         class="practitioners-table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Prénom</th>
+        <th>Téléphone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of practitioners" 
+          (click)="onSelectPractitioner(p)">
+        <td>{{ p.family }}</td>
+        <td>{{ p.given }}</td>
+        <td>{{ p.phone || '-' }}</td>
+        <td>{{ p.email || '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Message aucun praticien -->
+  <div *ngIf="!isLoading && !selectedPractitioner && practitioners.length === 0" 
+       class="no-practitioners">
+    Aucun praticien trouvé.
+  </div>
+
+  <!-- Détails du praticien sélectionné -->
+  <div *ngIf="selectedPractitioner" class="practitioner-details">
+    <div class="practitioner-image">
+      <img *ngIf="selectedPractitioner.gender === 'female'" 
+           src="https://i.postimg.cc/pdc7ZyNn/female.png" 
+           alt="Photo du praticien" />
+      <img *ngIf="selectedPractitioner.gender === 'male'" 
+           src="https://i.postimg.cc/wx7469Cw/male.png" 
+           alt="Photo du praticien" />
+      <img *ngIf="selectedPractitioner.gender !== 'female' && selectedPractitioner.gender !== 'male'" 
+           src="https://i.postimg.cc/wx7469Cw/male.png" 
+           alt="Photo du praticien" />
+    </div>
+
+    <div class="main-content">
+      <h5>Détails du praticien</h5>
+      <ul>
+        <li><strong>Nom :</strong> {{ selectedPractitioner.family }}</li>
+        <li><strong>Prénom :</strong> {{ selectedPractitioner.given }}</li>
+        <li><strong>Téléphone :</strong> {{ selectedPractitioner.phone || '-' }}</li>
+        <li><strong>Email :</strong> {{ selectedPractitioner.email || '-' }}</li>
+        <li><strong>Spécialité :</strong> {{ selectedPractitioner.specialty || '-' }}</li>
+        <li><strong>Date de naissance :</strong> {{ selectedPractitioner.birthDate || '-' }}</li>
+        <li><strong>Adresse :</strong> {{ selectedPractitioner.address || '-' }}</li>
+        <li><strong>Genre :</strong> {{ selectedPractitioner.gender || '-' }}</li>
+      </ul>
+      <button class="btn-back" (click)="selectedPractitioner = null">
+        Retour à la liste
+      </button>
+    </div>
   </div>
 </div>

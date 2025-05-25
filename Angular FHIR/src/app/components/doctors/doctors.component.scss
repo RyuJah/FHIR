@@ -1,21 +1,281 @@
-.practitioner-details {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 48px; // Ajoute de l'espace sous les infos
-}
-.practitioner-image {
-  flex: 0 0 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 400px;
+// Import des modules Sass modernes
+@use 'sass:color';
+
+// Variables
+$primary-color: #007bff;
+$secondary-color: #6c757d;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$white: #ffffff;
+$light-gray: #f8f9fa;
+$border-color: #dee2e6;
+$text-dark: #333333;
+$text-muted: #6c757d;
+$border-radius: 8px;
+$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+$transition: all 0.3s ease;
+
+// Reset et base
+* {
+  box-sizing: border-box;
 }
 
-.practitioner-image img {
+// Container principal
+.practitioners-container {
+  padding: 2rem;
+  background-color: $light-gray;
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+// États de chargement
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: $white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  color: $primary-color;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 2rem;
+
+  &::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    border: 3px solid $border-color;
+    border-top: 3px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  background: $danger-color;
+  color: $white;
+  padding: 1.5rem;
+  border-radius: $border-radius;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+// Message "Aucun praticien"
+.no-practitioners {
+  background: $white;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius;
+  padding: 3rem;
+  text-align: center;
+  color: $text-muted;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}
+
+// Tableau des praticiens
+.practitioners-table {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  background: $white;
+  border-radius: $border-radius;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+  margin-bottom: 2rem;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  thead {
+    background: $primary-color;
+    
+    th {
+      color: $white;
+      font-weight: 600;
+      padding: 1rem;
+      text-align: left;
+      border: none;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &:first-child {
+        border-top-left-radius: $border-radius;
+      }
+
+      &:last-child {
+        border-top-right-radius: $border-radius;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      background: $white;
+      border-bottom: 1px solid $border-color;
+      transition: $transition;
+      
+      &:hover {
+        background-color: #f1f3f4;
+        cursor: pointer;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      td {
+        color: $text-dark;
+        padding: 1rem;
+        border: none;
+        font-size: 0.95rem;
+        
+        &:first-child {
+          font-weight: 600;
+          color: $primary-color;
+        }
+      }
+    }
+  }
+}
+
+// Détails du praticien
+.practitioner-details {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 2rem;
+  background: $white;
+  border-radius: $border-radius;
+  padding: 2rem;
+  box-shadow: $box-shadow;
+  margin-top: 2rem;
+  
+  .practitioner-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    img {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid $primary-color;
+      box-shadow: $box-shadow;
+      transition: $transition;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+  
+  .main-content {
+    
+    h5 {
+      color: $text-dark;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      border-bottom: 3px solid $primary-color;
+      padding-bottom: 0.5rem;
+      display: inline-block;
+    }
+    
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+      
+      li {
+        background: $light-gray;
+        margin-bottom: 0.75rem;
+        padding: 1rem;
+        border-radius: $border-radius;
+        border-left: 4px solid $primary-color;
+        color: $text-dark;
+        transition: $transition;
+        
+        &:hover {
+          background: #e9ecef;
+          transform: translateX(5px);
+        }
+        
+        strong {
+          color: $primary-color;
+          font-weight: 600;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+// Bouton de retour
+.btn-back {
+  background: $secondary-color;
+  border: none;
+  color: $white;
+  padding: 0.75rem 1.5rem;
+  border-radius: $border-radius;
+  font-weight: 600;
+  cursor: pointer;
+  transition: $transition;
+  font-size: 0.9rem;
+  
+  &:hover {
+    background: color.adjust($secondary-color, $lightness: -10%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .practitioners-container {
+    padding: 1rem;
+  }
+  
+  .practitioner-details {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.5rem;
+    
+    .practitioner-image img {
+      width: 150px;
+      height: 150px;
+    }
+  }
+  
+  .practitioners-table {
+    font-size: 0.85rem;
+    
+    th, td {
+      padding: 0.75rem 0.5rem;
+    }
+  }
+}
+
+// Corrections spécifiques pour éviter les conflits
+.table {
+  &.practitioners-table {
+    border: none;
+    margin-bottom: 0;
+  }
+}
+
+// Assurer que les éléments Bootstrap ne surchargent pas
+.text-danger {
+  @extend .error-container;
 }
