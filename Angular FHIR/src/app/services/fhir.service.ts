@@ -4,12 +4,55 @@ import { Observable, of, throwError } from 'rxjs';
 import { map, catchError,tap } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'  // Cette ligne rend le service disponible partout dans l'application
+  providedIn: 'root'
 })
 export class FhirService {
   private baseUrl = 'https://fhir.chl.connected-health.fr/fhir';
 
   constructor(private http: HttpClient) { }
+
+  /**
+   * Récupère les unités fonctionnelles (UF)
+   * @returns Observable<any[]> Liste des UF
+   */
+  getUnitesFonctionnelles(): Observable<any[]> {
+    const url = `${this.baseUrl}/Location`;
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        if (response && response.entry) {
+          // On ne garde que les Locations qui ont un champ partOf (donc des UF)
+          return response.entry
+            .map((entry: any) => entry.resource)
+            .filter((resource: any) => !!resource.partOf);
+        }
+        return [];
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des UF:', error);
+        return of([]);
+      })
+    );
+  }
+
+  /**
+   * Récupère les rôles des praticiens (PractitionerRole)
+   * @returns Observable<any[]> Liste des PractitionerRole
+   */
+  getPractitionerRoles(): Observable<any[]> {
+    const url = `${this.baseUrl}/PractitionerRole`;
+    return this.http.get<any>(url).pipe(
+      map(response => {
+        if (response && response.entry && Array.isArray(response.entry)) {
+          return response.entry.map((entry: any) => entry.resource);
+        }
+        return [];
+      }),
+      catchError(error => {
+        console.error('Erreur lors de la récupération des PractitionerRole:', error);
+        return of([]);
+      })
+    );
+  }
 
   /**
    * Récupère les praticiens (médecins)
