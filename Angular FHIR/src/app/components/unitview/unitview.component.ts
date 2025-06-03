@@ -22,6 +22,10 @@ export class UnitviewComponent implements OnInit {
     this.fhirService.getUnitesFonctionnelles().subscribe({
       next: (ufs: any[]) => {
         this.uniteFonctionnelles = ufs;
+        if (ufs.length > 0) {
+          console.log(ufs);
+          this.afficherMedecins(ufs[0]); // Sélectionne la première UF automatiquement
+        }
       },
       error: (err: any) => {
         console.error('Erreur lors du chargement des UF', err);

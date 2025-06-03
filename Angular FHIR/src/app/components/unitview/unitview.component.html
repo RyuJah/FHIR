@@ -5,7 +5,8 @@
     (click)="afficherMedecins(uf)"
     style="cursor:pointer"
   ><h3>{{ uf.name }}</h3>
-    <p><strong>Statut :</strong> {{ uf.status }}</p>
+    <!--<p><strong>Statut :</strong> {{ uf.status }}</p>-->
+    <p><strong>Établissement :</strong> {{ uf.partOf?.display || 'Non renseigné' }}</p>
     <p><strong>Description :</strong> {{ uf.description || 'Aucune description' }}</p>
     <p><strong>Type :</strong> {{ uf.type?.[0]?.text || 'Non spécifié' }}</p>
   </div>
