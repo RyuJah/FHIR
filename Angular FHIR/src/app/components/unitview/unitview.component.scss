@@ -1,0 +1,299 @@
+// Import des modules Sass modernes
+@use 'sass:color';
+
+// Variables améliorées
+$primary-color: #007bff;
+$primary-light: #3395ff;
+$secondary-color: #6c757d;
+$success-color: #28a745;
+$danger-color: #dc3545;
+$white: #ffffff;
+$light-gray: #f8f9fa;
+$lighter-gray: #e9ecef;
+$border-color: #dee2e6;
+$text-dark: #333333;
+$text-muted: #6c757d;
+$border-radius: 12px;
+$border-radius-lg: 16px;
+$box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+$box-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+$transition: all 0.3s ease;
+$transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+.practitioners-container h2 {
+  margin-bottom: 2rem;
+}
+
+.practitioners-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+// En-tête avec titre
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: $primary-color;
+    margin: 0;
+    padding: 1.5rem 3rem;
+    background: $white;
+    border-radius: $border-radius-lg;
+    box-shadow: $box-shadow;
+    display: inline-block;
+    position: relative;
+    text-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
+
+    &::before {
+      content: '👩‍⚕️';
+      position: absolute;
+      left: -50px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.2rem;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    &::after {
+      content: '👨‍⚕️';
+      position: absolute;
+      right: -50px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 2.2rem;
+      animation: float 3s ease-in-out infinite reverse;
+    }
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(10px); }
+}
+
+
+// États de chargement améliorés
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  background: $white;
+  border-radius: $border-radius-lg;
+  box-shadow: $box-shadow;
+  color: $primary-color;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 2rem;
+  border: 2px solid rgba(0, 123, 255, 0.1);
+
+  &::before {
+    content: '';
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(0, 123, 255, 0.1);
+    border-top: 4px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+  }
+}
+
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  background: linear-gradient(135deg, $danger-color, color.adjust($danger-color, $lightness: -5%));
+  color: $white;
+  padding: 2rem;
+  border-radius: $border-radius-lg;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.no-practitioners {
+  background: $white;
+  border: 3px dashed $primary-light;
+  border-radius: $border-radius-lg;
+  padding: 4rem 3rem;
+  text-align: center;
+  color: $primary-color;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  box-shadow: $box-shadow;
+
+  &::before {
+    content: '🔍';
+    display: block;
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    animation: bounce 2s infinite;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+// Tableau moderne et élégant
+.practitioners-table {
+  width: 100%;
+  background: $white;
+  border-radius: $border-radius-lg;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+  margin-bottom: 2rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  transition: $transition;
+
+  &:hover {
+    box-shadow: $box-shadow-hover;
+  }
+
+  thead {
+    background: linear-gradient(135deg, $primary-color, $primary-light);
+
+    th {
+      color: $white;
+      font-weight: 600;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      border: none;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      position: relative;
+
+      &:first-child {
+        border-top-left-radius: $border-radius-lg;
+      }
+
+      &:last-child {
+        border-top-right-radius: $border-radius-lg;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.7), rgba(255,255,255,0.3));
+        opacity: 0;
+        transition: $transition;
+      }
+
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      background: $white;
+      border-bottom: 1px solid rgba(0, 123, 255, 0.1);
+      transition: $transition-smooth;
+      position: relative;
+
+      &:hover {
+        background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(51, 149, 255, 0.05));
+        cursor: pointer;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
+      }
+
+      &:last-child {
+        border-bottom: none;
+
+        td:first-child {
+          border-bottom-left-radius: $border-radius-lg;
+        }
+
+        td:last-child {
+          border-bottom-right-radius: $border-radius-lg;
+        }
+      }
+
+      td {
+        color: $text-dark;
+        padding: 1.2rem 1rem;
+        border: none;
+        font-size: 0.95rem;
+        text-align: center;
+        transition: $transition;
+
+        &:first-child {
+          font-weight: 600;
+          color: $primary-color;
+          background: linear-gradient(90deg, $primary-color, $primary-light);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
+
+.uf-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.medecins-list {
+  margin-top: 2rem;
+}
+
+.uf-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem 2rem;
+  width: 300px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    background: #f0f8ff;
+  }
+
+  h3 {
+    margin-top: 0;
+    color: #1976d2;
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
