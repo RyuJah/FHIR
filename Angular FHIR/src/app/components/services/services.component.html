@@ -471,3 +471,176 @@
     </div>
   </div>
 </div>
+
+<!-- Modal d'édition UF -->
+<div *ngIf="showEditUFModal" class="modal modal-uf-edit fade show" id="editUFModal" 
+     style="display: block;" tabindex="-1" aria-labelledby="editUFModalLabel" 
+     [style.background-color]="'rgba(0,0,0,0.5)'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUFModalLabel">
+          <i class="bi bi-pencil-square"></i>
+          Modifier l'Unité Fonctionnelle
+        </h5>
+        <button type="button" class="btn-close" (click)="closeEditUFModal()" aria-label="Fermer"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="editUFForm" (ngSubmit)="onSaveEditUF()">
+          <!-- Section Informations générales -->
+          <div class="form-section">
+            <h4>
+              <i class="bi bi-info-circle"></i>
+              Informations générales
+            </h4>
+            
+            <div class="form-group">
+              <label for="editUfName">Nom de l'unité fonctionnelle <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="editUfName" 
+                formControlName="name" 
+                placeholder="Ex: Service de Cardiologie"
+                [class.is-invalid]="isEditUFFieldInvalid('name')"
+              >
+              <div *ngIf="isEditUFFieldInvalid('name')" class="error-message">
+                {{ getEditUFErrorMessage('name') }}
+              </div>
+            </div>
+
+            <div class="form-row">
+              <!-- <div class="form-group">
+                <label for="editUfNumero">Numéro UF (unique) <span class="required">*</span></label>
+                <input 
+                  type="text" 
+                  id="editUfNumero" 
+                  formControlName="ufNumero" 
+                  placeholder="Ex: 1234"
+                  [class.is-invalid]="isEditUFFieldInvalid('ufNumero')"
+                >
+                <small class="form-text">Doit être composé de 4 à 6 chiffres et doit être unique.</small>
+                <div *ngIf="isEditUFFieldInvalid('ufNumero')" class="error-message">
+                  {{ getEditUFErrorMessage('ufNumero') }}
+                </div>
+              </div> -->
+              
+              <div class="form-group">
+                <label for="editUfStatus">Statut <span class="required">*</span></label>
+                <select 
+                  id="editUfStatus" 
+                  formControlName="status"
+                  [class.is-invalid]="isEditUFFieldInvalid('status')"
+                >
+                  <option value="active">Actif</option>
+                  <option value="suspended">Suspendu</option>
+                  <option value="inactive">Inactif</option>
+                </select>
+                <div *ngIf="isEditUFFieldInvalid('status')" class="error-message">
+                  {{ getEditUFErrorMessage('status') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="editUfDescription">Description</label>
+              <textarea 
+                id="editUfDescription" 
+                formControlName="description" 
+                placeholder="Description de l'unité fonctionnelle"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="editUfEtablissement">Établissement parent <span class="required">*</span></label>
+              <select 
+                id="editUfEtablissement" 
+                formControlName="etablissementId"
+                [class.is-invalid]="isEditUFFieldInvalid('etablissementId')"
+              >
+                <option value="" disabled>Sélectionnez un établissement</option>
+                <option *ngFor="let etab of etablissements" [value]="etab.id">
+                  {{ etab.name }}
+                </option>
+              </select>
+              <div *ngIf="isEditUFFieldInvalid('etablissementId')" class="error-message">
+                {{ getEditUFErrorMessage('etablissementId') }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Localisation -->
+          <div class="form-section">
+            <h4>
+              <i class="bi bi-geo-alt"></i>
+              Localisation dans l'établissement
+            </h4>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUfFloor">Étage</label>
+                <input 
+                  type="text" 
+                  id="editUfFloor" 
+                  formControlName="floor" 
+                  placeholder="Ex: 2, Rez-de-chaussée"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="editUfWing">Aile/Bâtiment</label>
+                <input 
+                  type="text" 
+                  id="editUfWing" 
+                  formControlName="wing" 
+                  placeholder="Ex: Aile Est, Pavillon B"
+                >
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUfRoomNumber">Numéro de salle</label>
+                <input 
+                  type="text" 
+                  id="editUfRoomNumber" 
+                  formControlName="roomNumber" 
+                  placeholder="Ex: 204, A12"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="editUfAddressUse">Type d'adresse</label>
+                <select 
+                  id="editUfAddressUse" 
+                  formControlName="addressUse"
+                >
+                  <option value="work">Travail</option>
+                  <option value="temp">Temporaire</option>
+                  <option value="old">Ancienne</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="btn-group-custom">
+            <button type="button" class="btn btn-secondary" (click)="closeEditUFModal()">
+              <i class="bi bi-x-circle"></i>
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="!canSaveUF()"
+            >
+              <i class="bi bi-check-circle"></i>
+              Enregistrer les modifications
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

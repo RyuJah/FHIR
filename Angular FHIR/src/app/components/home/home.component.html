@@ -4,14 +4,11 @@
       <div class="hero-text">
         <h1>Votre santé, notre priorité</h1>
         <p>Bienvenue à GHT ISIS, où des soins de qualité rencontrent l'innovation médicale pour une expérience de guérison exceptionnelle.</p>
-        <div class="hero-buttons">
-          <a href="#" class="btn-primary">Prendre rendez-vous</a>
-          <a href="#" class="btn-secondary">Nos services</a>
-        </div>
+        
       </div>
-      <div class="hero-image">
-        <img src="assets/images/hospital-building.jpg" alt="Hôpital moderne">
-      </div>
+    <div class="hero-image"> 
+    <img src="https://i.postimg.cc/hvPtS3sb/Isis-castres.jpg" alt="Hôpital moderne"> 
+</div>
     </div>
   </div>
 </section>
@@ -56,67 +53,17 @@
   <div class="container">
     <h2 class="section-title">Nos services médicaux</h2>
     <div class="services-grid">
-      <div class="service-card">
-        <img src="assets/images/cardiology.jpg" alt="Cardiologie">
-        <h3>Cardiologie</h3>
-        <p>Soins complets pour la santé de votre cœur avec les dernières technologies.</p>
-        <a href="#" class="service-link">En savoir plus</a>
+      <div class="service-card" *ngFor="let uf of uniteFonctionnelles">
+       
+        <h3>{{ uf.name }}</h3>
+        <p>{{ uf.description || 'Description non disponible' }}</p>
+        <p><strong>Établissement :</strong> {{ uf.partOf?.display || 'Non renseigné' }}</p>
       </div>
-      <div class="service-card">
-        <img src="assets/images/neurology.jpg" alt="Neurologie">
-        <h3>Neurologie</h3>
-        <p>Traitement des troubles du système nerveux par nos experts neurologues.</p>
-        <a href="#" class="service-link">En savoir plus</a>
-      </div>
-      <div class="service-card">
-        <img src="assets/images/pediatrics.jpg" alt="Pédiatrie">
-        <h3>Pédiatrie</h3>
-        <p>Soins spécialisés pour les enfants dans un environnement accueillant.</p>
-        <a href="#" class="service-link">En savoir plus</a>
-      </div>
-    </div>
-    <div class="services-cta">
-      <a href="/services" class="btn-primary">Voir tous nos services</a>
     </div>
   </div>
 </section>
 
-<section class="appointment">
-  <div class="container">
-    <div class="appointment-content">
-      <div class="appointment-text">
-        <h2>Prenez rendez-vous en ligne</h2>
-        <p>Réservez votre consultation avec l'un de nos spécialistes en quelques clics.</p>
-      </div>
-      <div class="appointment-form">
-        <div class="form-group">
-          <select>
-            <option value="" disabled selected>Sélectionnez un département</option>
-            <option value="cardiology">Cardiologie</option>
-            <option value="neurology">Neurologie</option>
-            <option value="pediatrics">Pédiatrie</option>
-            <option value="orthopedics">Orthopédie</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <select>
-            <option value="" disabled selected>Choisissez un médecin</option>
-            <option value="dr-martin">Dr. Martin</option>
-            <option value="dr-dubois">Dr. Dubois</option>
-            <option value="dr-petit">Dr. Petit</option>
-            <option value="dr-laurent">Dr. Laurent</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <input type="date" placeholder="Date du rendez-vous">
-        </div>
-        <div class="form-group">
-          <button class="btn-primary btn-full">Réserver maintenant</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <section class="testimonials">
   <div class="container">

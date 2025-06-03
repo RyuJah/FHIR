@@ -34,6 +34,12 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
   isEditingEtablissement = false;
   editingEtablissementId: string | null = null;
   
+  // Propriétés pour le modal d'édition UF
+  showEditUFModal = false;
+  editingUF: any = null;
+  editingUFId: string | null = null;
+  editUFForm!: FormGroup;
+  
   // Pour la gestion du carrousel
   slides = [
     {
@@ -112,6 +118,22 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       city: ['', Validators.required],
       postalCode: ['', Validators.required],
       country: ['FR', Validators.required]
+    });
+    
+    // Initialiser le formulaire d'édition UF
+    this.editUFForm = this.formBuilder.group({
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      // ufNumero: ['', [
+      //   Validators.required, 
+      //   Validators.pattern('^[0-9]{4,6}$')
+      // ], [this.ufNumeroUniqueValidator()]],
+      status: ['active', Validators.required],
+      description: [''],
+      etablissementId: ['', Validators.required],
+      floor: [''],
+      wing: [''],
+      roomNumber: [''],
+      addressUse: ['work', Validators.required]
     });
     
     this.myForm.statusChanges.subscribe(status => {
@@ -286,15 +308,109 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     return parts.length > 0 ? parts.join(', ') : '';
   }
   
-  // Utilitaire pour récupérer la valeur d'une extension FHIR
+  /**
+   * Utilitaire pour récupérer la valeur d'une extension FHIR
+   * @param resource - La ressource FHIR
+   * @param urlSuffix - Le suffixe de l'URL de l'extension à rechercher
+   * @returns La valeur de l'extension ou null si non trouvée
+   */
   getExtensionValue(resource: any, urlSuffix: string): string | null {
-    if (!resource.extension || !resource.extension.length) return null;
+    if (!resource || !resource.extension || !Array.isArray(resource.extension)) {
+      return null;
+    }
     
+    // Recherche par suffixe d'URL pour plus de flexibilité
     const extension = resource.extension.find((ext: any) => 
-      ext.url.endsWith(urlSuffix)
+      ext.url && (
+        ext.url.endsWith(urlSuffix) || 
+        ext.url.endsWith(`/${urlSuffix}`) ||
+        ext.url.includes(urlSuffix)
+      )
     );
     
-    return extension ? extension.valueString : null;
+    if (!extension) {
+      return null;
+    }
+    
+    // Retourner la valeur selon son type
+    return extension.valueString || 
+           extension.valueCode || 
+           extension.valueInteger?.toString() || 
+           extension.valueDecimal?.toString() || 
+           extension.valueBoolean?.toString() || 
+           null;
+  }
+
+  /**
+   * Méthode utilitaire pour créer une extension FHIR
+   * @param urlSuffix - Le suffixe de l'URL de l'extension
+   * @param value - La valeur de l'extension
+   * @param valueType - Le type de valeur (string, integer, boolean, etc.)
+   * @returns L'objet extension FHIR
+   */
+  createExtension(urlSuffix: string, value: any, valueType: string = 'string'): any {
+    const baseUrl = 'http://our-organization/extensions';
+    
+    const extension: any = {
+      url: `${baseUrl}/${urlSuffix}`
+    };
+    
+    // Définir la valeur selon le type
+    switch (valueType) {
+      case 'string':
+        extension.valueString = value;
+        break;
+      case 'integer':
+        extension.valueInteger = parseInt(value, 10);
+        break;
+      case 'boolean':
+        extension.valueBoolean = Boolean(value);
+        break;
+      case 'decimal':
+        extension.valueDecimal = parseFloat(value);
+        break;
+      default:
+        extension.valueString = value.toString();
+    }
+    
+    return extension;
+  }
+
+  /**
+   * Méthode pour extraire toutes les informations de localisation d'une UF
+   * @param uf - La ressource UF FHIR
+   * @returns Objet contenant toutes les informations de localisation
+   */
+  extractUFLocationInfo(uf: any): {floor?: string, wing?: string, roomNumber?: string, addressUse?: string} {
+    return {
+      floor: this.getExtensionValue(uf, 'floor') || '',
+      wing: this.getExtensionValue(uf, 'wing') || '',
+      roomNumber: this.getExtensionValue(uf, 'roomNumber') || '',
+      addressUse: uf.address?.use || 'work'
+    };
+  }
+
+  /**
+   * Méthode pour créer les extensions de localisation pour une UF
+   * @param locationData - Les données de localisation
+   * @returns Tableau d'extensions FHIR
+   */
+  createLocationExtensions(locationData: {floor?: string, wing?: string, roomNumber?: string}): any[] {
+    const extensions: any[] = [];
+    
+    if (locationData.floor) {
+      extensions.push(this.createExtension('floor', locationData.floor));
+    }
+    
+    if (locationData.wing) {
+      extensions.push(this.createExtension('wing', locationData.wing));
+    }
+    
+    if (locationData.roomNumber) {
+      extensions.push(this.createExtension('roomNumber', locationData.roomNumber));
+    }
+    
+    return extensions;
   }
   
   // Sélectionner un établissement pour le formulaire principal
@@ -333,7 +449,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 100);
   }
 
-  // Méthode pour annuler l'édition
+  // Méthode pour annuler l'édition d'établissement
   cancelEditEtablissement() {
     this.isEditingEtablissement = false;
     this.editingEtablissementId = null;
@@ -341,34 +457,232 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.etablissementForm.reset();
   }
   
-  // Voir les détails d'une UF
-  viewUFDetails(uf: any) {
-    // Implémenter la logique pour afficher les détails
-    console.log('Voir détails UF', uf);
-    // Par exemple, naviguer vers une page de détails ou ouvrir une boîte de dialogue
-    this.showPopupMessage(`Détails de l'UF "${uf.name}" - Fonctionnalité à venir`, 'info');
-  }
-  
-  // Éditer une UF
+  // Éditer une UF avec modal
   editUF(uf: any) {
-    // Remplir le formulaire principal avec les données de l'UF
-    const ufNumero = this.getUFNumero(uf);
+    console.log('Édition de l\'UF:', uf);
     
-    this.myForm.patchValue({
-      name: uf.name,
+    // Extraire le numéro UF
+    // const ufNumero = this.getUFNumero(uf);
+    
+    // Extraire l'ID de l'établissement parent
+    const etablissementId = this.extractEtablissementId(uf);
+    
+    // Extraire les informations de localisation
+    const locationInfo = this.extractUFLocationInfo(uf);
+    
+    // Remplir le formulaire d'édition avec les données de l'UF
+    this.editUFForm.patchValue({
+      name: uf.name || '',
+      // ufNumero: ufNumero !== 'N° non spécifié' ? ufNumero : '',
       status: uf.status || 'active',
-      typeCode: uf.type?.[0]?.coding?.[0]?.code || 'ws',
       description: uf.description || '',
-      ufNumero: ufNumero !== 'N° non spécifié' ? ufNumero : '',
-      etablissementId: uf.partOf?.reference.replace('Location/', '') || '',
-      addressUse: uf.address?.use || 'work',
-      addressLine: uf.address?.line?.[0] || ''
+      etablissementId: etablissementId || '',
+      floor: locationInfo.floor || '',
+      wing: locationInfo.wing || '',
+      roomNumber: locationInfo.roomNumber || '',
+      addressUse: locationInfo.addressUse || 'work'
     });
     
-    // Faire défiler la page jusqu'au formulaire principal
-    // Implementation à adapter selon votre interface
+    // Stocker les informations de l'UF en cours d'édition
+    this.editingUF = uf;
+    this.editingUFId = uf.id;
     
-    this.showPopupMessage(`UF "${uf.name}" chargée pour modification`);
+    // Afficher le modal
+    this.showEditUFModal = true;
+    
+    this.showPopupMessage(`Édition de l'UF "${uf.name}"`);
+  }
+
+  // Fermer le modal d'édition UF
+  closeEditUFModal() {
+    this.showEditUFModal = false;
+    this.editingUF = null;
+    this.editingUFId = null;
+    
+    // Réinitialiser le formulaire
+    this.editUFForm.reset({
+      status: 'active',
+      addressUse: 'work'
+    });
+    
+    // Nettoyer les états de validation
+    this.editUFForm.markAsUntouched();
+    this.editUFForm.markAsPristine();
+    Object.keys(this.editUFForm.controls).forEach(key => {
+      this.editUFForm.get(key)?.setErrors(null);
+    });
+  }
+
+  // Sauvegarder les modifications de l'UF
+  onSaveEditUF() {
+    if (this.editUFForm.valid && this.editingUFId) {
+      console.log('Sauvegarde des modifications UF:', this.editUFForm.value);
+      
+      // Extraire les données de localisation du formulaire
+      const locationData = {
+        floor: this.editUFForm.get('floor')?.value,
+        wing: this.editUFForm.get('wing')?.value,
+        roomNumber: this.editUFForm.get('roomNumber')?.value
+      };
+      
+      // Construire l'objet UF modifié
+      const updatedUF = {
+        resourceType: 'Location',
+        id: this.editingUFId,
+        name: this.editUFForm.get('name')?.value,
+        description: this.editUFForm.get('description')?.value,
+        status: this.editUFForm.get('status')?.value,
+        mode: 'instance',
+        identifier: [
+          {
+            system: 'http://our-organization/identifiers/uf-numero',
+            value: this.editUFForm.get('ufNumero')?.value,
+            use: 'official'
+          }
+        ],
+        type: [
+          {
+            coding: [
+              {
+                system: 'http://terminology.hl7.org/CodeSystem/location-type',
+                code: 'ws',
+                display: 'Ward-Service'
+              }
+            ],
+            text: "Unité Fonctionnelle"
+          }
+        ],
+        physicalType: {
+          coding: [
+            {
+              system: 'http://terminology.hl7.org/CodeSystem/location-physical-type',
+              code: 'wa',
+              display: 'Ward'
+            }
+          ]
+        },
+        partOf: {
+          reference: `Location/${this.editUFForm.get('etablissementId')?.value}`,
+          display: this.getEtablissementName(this.editUFForm.get('etablissementId')?.value)
+        },
+        address: {
+          use: this.editUFForm.get('addressUse')?.value
+        },
+        // Utiliser la nouvelle méthode pour créer les extensions
+        extension: this.createLocationExtensions(locationData)
+      };
+
+      console.log('UF à mettre à jour:', updatedUF);
+
+      // Appel au service FHIR pour mettre à jour l'UF
+      this.fhirService.updateUniteFonctionnelle(this.editingUFId, updatedUF).subscribe({
+        next: (response) => {
+          console.log('UF mise à jour avec succès:', response);
+          this.showPopupMessage(`UF "${response.name}" mise à jour avec succès`);
+          
+          // Actualiser la liste des UF pour l'établissement concerné
+          const etablissementId = this.editUFForm.get('etablissementId')?.value;
+          if (etablissementId) {
+            this.refreshUFsForEtablissement(etablissementId);
+          }
+          
+          // Fermer le modal
+          this.closeEditUFModal();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour de l\'UF:', error);
+          
+          let errorMessage = 'Erreur lors de la mise à jour de l\'UF';
+          if (error.status === 404) {
+            errorMessage = 'UF non trouvée';
+          } else if (error.status === 403) {
+            errorMessage = 'Vous n\'avez pas les droits pour modifier cette UF';
+          } else if (error.status === 409) {
+            errorMessage = 'Conflit: le numéro UF est déjà utilisé';
+          } else if (error.message) {
+            errorMessage = `Erreur: ${error.message}`;
+          }
+          
+          this.showPopupMessage(errorMessage, 'error');
+        }
+      });
+    } else {
+      // Marquer tous les champs comme touchés pour afficher les erreurs
+      this.validateAllFormFields(this.editUFForm);
+      this.showPopupMessage('Le formulaire contient des erreurs. Veuillez les corriger.', 'error');
+    }
+  }
+
+  // Vérifier si un champ du formulaire d'édition UF est invalide
+  isEditUFFieldInvalid(fieldName: string): boolean {
+    const control = this.editUFForm.get(fieldName);
+    return !!(control && control.invalid && control.touched);
+  }
+
+  // Obtenir le message d'erreur pour un champ du formulaire d'édition UF
+  getEditUFErrorMessage(fieldName: string): string {
+    const control = this.editUFForm.get(fieldName);
+    if (!control) return '';
+    
+    if (control.errors?.['required']) {
+      return 'Ce champ est requis.';
+    }
+    
+    if (control.errors?.['minlength']) {
+      return `Ce champ doit contenir au moins ${control.errors['minlength'].requiredLength} caractères.`;
+    }
+    
+    if (control.errors?.['pattern']) {
+      if (fieldName === 'ufNumero') {
+        return 'Le numéro UF doit être composé de 4 à 6 chiffres uniquement.';
+      }
+      return 'Format invalide.';
+    }
+    
+    if (control.errors?.['ufNumeroExists']) {
+      return 'Ce numéro UF est déjà utilisé.';
+    }
+    
+    return '';
+  }
+
+  // Vérifier si on peut sauvegarder l'UF (logique plus intelligente)
+  canSaveUF(): boolean {
+    if (!this.editUFForm) return false;
+    
+    // Vérifier les champs requis
+    const requiredFields = ['name', 'ufNumero', 'status', 'etablissementId'];
+    const hasRequiredFields = requiredFields.every(field => {
+      const control = this.editUFForm.get(field);
+      return control && control.value && control.value.trim() !== '';
+    });
+    
+    if (!hasRequiredFields) return false;
+    
+    // Vérifier les erreurs importantes (sauf ufNumeroExists si c'est la même UF)
+    const nameControl = this.editUFForm.get('name');
+    const ufNumeroControl = this.editUFForm.get('ufNumero');
+    
+    // Erreurs de format
+    if (nameControl?.errors?.['minlength'] || 
+        ufNumeroControl?.errors?.['pattern']) {
+      return false;
+    }
+    
+    // Pour ufNumeroExists, vérifier si c'est un nouveau numéro ou le même
+    if (ufNumeroControl?.errors?.['ufNumeroExists']) {
+      const currentUfNumero = this.getUFNumero(this.editingUF);
+      const newUfNumero = ufNumeroControl.value;
+      
+      // Si c'est le même numéro que l'UF actuelle, c'est OK
+      if (currentUfNumero === newUfNumero) {
+        return true;
+      }
+      // Si c'est un nouveau numéro et qu'il existe déjà, erreur
+      return false;
+    }
+    
+    return true;
   }
   
   // Créer une nouvelle UF pour un établissement spécifique
@@ -538,9 +852,6 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showPopup = false;
     }, 3000);
   }
- // Remplacez votre méthode deleteUF() vide par cette implémentation complète :
-
-// Remplacez votre méthode deleteUF() vide par cette implémentation complète :
 
 deleteUF(uf: any): void {
   // Confirmation avant suppression
@@ -595,6 +906,7 @@ private refreshUFsForEtablissement(etablissementId: string): void {
   // Recharger les UF pour cet établissement en utilisant la méthode existante
   this.loadUFsForEtablissement(etablissementId);
 }
+
 // Méthode pour supprimer un établissement
 deleteEtablissement(etab: any): void {
   // Vérifier si l'établissement contient des UF
@@ -672,8 +984,6 @@ private refreshEtablissementsList(): void {
   // Recharger les établissements pour le panneau latéral
   this.loadEtablissementsList();
 }  
-
-
 
   onAddEtablissement() {
     if (this.etablissementForm.valid) {
@@ -809,6 +1119,13 @@ private updateLocalEtablissementLists(updatedEtablissement: any) {
         detailedLocation = detailedLocation.slice(0, -2);
       }
       
+      // Extraire les données de localisation du formulaire
+      const locationData = {
+        floor: this.myForm.get('floor')?.value,
+        wing: this.myForm.get('wing')?.value,
+        roomNumber: this.myForm.get('roomNumber')?.value
+      };
+      
       // Création de la structure FHIR Location pour l'UF
       const uniteFonctionnelle = {
         resourceType: 'Location',
@@ -843,14 +1160,16 @@ private updateLocalEtablissementLists(updatedEtablissement: any) {
             }
           ]
         },
-        
         partOf: {
           reference: `Location/${etablissementId}`,
           display: etablissement ? etablissement.name : 'Établissement référencé'
-        }
+        },
+        address: {
+          use: this.myForm.get('addressUse')?.value
+        },
+        // Utiliser la nouvelle méthode pour créer les extensions
+        extension: this.createLocationExtensions(locationData)
       };
-      
-  
       
       console.log('FHIR Unité Fonctionnelle:', uniteFonctionnelle);
       
@@ -1019,4 +1338,5 @@ private updateLocalEtablissementLists(updatedEtablissement: any) {
     if (this.carouselInterval) {
       clearInterval(this.carouselInterval);
     }
-  }}
+  }
+}

@@ -88,9 +88,7 @@ export class FhirService {
     );
   }
 
-  /**
-   * Récupère les établissements (Locations non UF)
-   */
+  
   getEtablissements(): Observable<any[]> {
     // Paramètres pour exclure les UF et récupérer uniquement les établissements principaux
     const params = new HttpParams()
@@ -113,9 +111,7 @@ export class FhirService {
     );
   }
 
-  /**
-   * Récupère un établissement spécifique par son ID
-   */
+ 
   getEtablissement(etablissementId: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/Location/${etablissementId}`).pipe(
       catchError(error => {
@@ -125,9 +121,7 @@ export class FhirService {
     );
   }
 
-  /**
-   * Crée un nouvel établissement
-   */
+ 
   createEtablissement(etablissement: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Location`, etablissement).pipe(
       catchError(error => {
@@ -137,9 +131,7 @@ export class FhirService {
     );
   }
 
-  /**
-   * Crée une nouvelle unité fonctionnelle
-   */
+ 
   createUniteFonctionnelle(uniteFonctionnelle: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/Location`, uniteFonctionnelle).pipe(
       catchError(error => {
@@ -159,7 +151,6 @@ export class FhirService {
       return of(true);
     }
 
-    // Construire les paramètres pour la recherche
     const params = new HttpParams()
       .set('identifier', `http://our-organization/identifiers/uf-numero|${ufNumero}`)
       .set('_summary', 'count');
@@ -176,18 +167,7 @@ export class FhirService {
       })
     );
   }
-// deleteEtablissement(etablissementId: string): Observable<any> {
-//   return this.http.delete(`${this.baseUrl}/Location/${etablissementId}`).pipe(
-//     tap(() => console.log(`Établissement ${etablissementId} supprimé avec succès`)),
-//     catchError(error => {
-//       console.error(`Erreur lors de la suppression de l'établissement ${etablissementId}:`, error);
-//       return throwError(() => new Error(`Échec de la suppression de l'établissement: ${error.message}`));
-//     })
-//   );
-// }
- /**
-   * Supprime une unité fonctionnelle par son ID
-   */
+
   deleteUF(ufId: string): Observable<any> {
     return this.http.delete(`${this.baseUrl}/Location/${ufId}`).pipe(
       tap(() => console.log(`UF ${ufId} supprimée avec succès`)),
@@ -197,7 +177,6 @@ export class FhirService {
       })
     );
   }
-  // Dans votre FhirService, ajoutez cette méthode :
 
 deleteEtablissement(etablissementId: string): Observable<any> {
   const url = `${this.baseUrl}/Location/${etablissementId}`;
@@ -209,7 +188,6 @@ deleteEtablissement(etablissementId: string): Observable<any> {
     catchError(error => {
       console.error(`Erreur lors de la suppression de l'établissement ${etablissementId} sur le serveur FHIR:`, error);
 
-      // Transformer l'erreur pour avoir un message plus explicite
       let errorMessage = `Échec de la suppression de l'établissement: ${error.message}`;
 
       if (error.status === 404) {
@@ -225,7 +203,6 @@ deleteEtablissement(etablissementId: string): Observable<any> {
   );
 }
 getUFsByEtablissementAlternative(etablissementId: string): Observable<any[]> {
-  // Utiliser une recherche plus simple et filtrer manuellement
   const params = new HttpParams()
     .set('_count', '500'); // Récupérer un nombre suffisant d'UF
 
@@ -238,12 +215,10 @@ getUFsByEtablissementAlternative(etablissementId: string): Observable<any[]> {
       if (response && response.entry && Array.isArray(response.entry)) {
         const allLocations = response.entry.map((entry: any) => entry.resource);
 
-        // Filtrer les UF qui ont l'établissement comme parent
 
         const filteredLocations = allLocations.filter((location: any) => {
           if (!location.partOf) return false;
 
-          // Vérifier différents formats possibles de référence
           return (
             location.partOf.reference === `Location/${etablissementId}` ||
             location.partOf.reference === etablissementId ||

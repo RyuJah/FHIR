@@ -2,6 +2,92 @@
 /* Styles pour le popup */
 /* Réinitialisation pour garantir que tout commence sans marges ni paddings */
 /* Styles pour le panneau latéral d'établissements et UF */
+/* Style pour les titres "Liste des Médecins", "Médecins de l'UF" et "Créer une Unité Fonctionnelle" */
+.practitioners-container h1,
+.practitioners-container h2,
+.main-content h2 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 1px;
+}
+
+.practitioners-container h1::after,
+.practitioners-container h2::after,
+.main-content h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+  border-radius: 2px;
+}
+
+/* Animation d'apparition */
+.practitioners-container h1,
+.practitioners-container h2,
+.main-content h2 {
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Effet hover subtil */
+.practitioners-container h1:hover,
+.practitioners-container h2:hover,
+.main-content h2:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+/* Responsivité pour mobile */
+@media (max-width: 768px) {
+  .practitioners-container h1,
+  .practitioners-container h2,
+  .main-content h2 {
+    font-size: 2rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+  
+  .practitioners-container h1::after,
+  .practitioners-container h2::after,
+  .main-content h2::after {
+    width: 80px;
+    height: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .practitioners-container h1,
+  .practitioners-container h2,
+  .main-content h2 {
+    font-size: 1.75rem;
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+}
 .edit-mode-indicator {
   margin-bottom: 1rem;
 }
@@ -1232,5 +1318,232 @@ textarea {
     text-decoration: underline;
   }
 }
+
   
+}
+/* Styles pour le modal d'édition UF */
+.modal-uf-edit {
+  z-index: 1060;
+  
+  .modal-dialog {
+    max-width: 800px;
+    margin: 1.75rem auto;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+    padding: 1.5rem 2rem;
+    border-radius: 12px 12px 0 0;
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-close {
+      filter: invert(1);
+      opacity: 0.8;
+      
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-body {
+    padding: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+
+    label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      background-color: #fff;
+
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      &.is-invalid {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+      }
+
+      &::placeholder {
+        color: #9ca3af;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+
+    select {
+      cursor: pointer;
+    }
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-section {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #667eea;
+
+    h4 {
+      color: #667eea;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+
+  .error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+    font-weight: 500;
+  }
+
+  .form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
+
+  .required {
+    color: #dc3545;
+    font-weight: 600;
+  }
+
+  .btn-group-custom {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e1e5e9;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+
+    &.btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+    }
+
+    &.btn-secondary {
+      background: #6c757d;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background: #5a6268;
+        transform: translateY(-1px);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+  }
+
+  // Animation d'entrée
+  &.fade {
+    .modal-dialog {
+      transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+      transform: scale(0.8) translateY(-50px);
+      opacity: 0;
+    }
+
+    &.show .modal-dialog {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .modal-uf-edit {
+    .modal-dialog {
+      margin: 1rem;
+      max-width: calc(100% - 2rem);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .form-section {
+      padding: 1rem;
+    }
+  }
 }

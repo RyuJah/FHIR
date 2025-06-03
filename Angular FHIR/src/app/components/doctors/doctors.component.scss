@@ -475,3 +475,76 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* Style pour le titre "Liste des Médecins" */
+.practitioners-container h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 1px;
+}
+
+/* Effet de soulignement décoratif */
+.practitioners-container h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #667eea 100%);
+  border-radius: 2px;
+}
+
+/* Animation d'apparition */
+.practitioners-container h1 {
+  animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Effet hover subtil */
+.practitioners-container h1:hover {
+  transform: scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+/* Responsivité pour mobile */
+@media (max-width: 768px) {
+  .practitioners-container h1 {
+    font-size: 2rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+  }
+  
+  .practitioners-container h1::after {
+    width: 80px;
+    height: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .practitioners-container h1 {
+    font-size: 1.75rem;
+    margin: 1rem 0;
+    padding: 0.75rem;
+  }
+}
