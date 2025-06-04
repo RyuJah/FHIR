@@ -1,23 +1,126 @@
-# Guide Patrimoine FHIR
+# Documentation du modèle FHIR ISIS (FHIR R5)
 
-Bienvenue dans le guide d'implémentation FHIR dédié à la gestion du patrimoine hospitalier.
+Cette documentation décrit les profils personnalisés FHIR R5 développés dans le cadre du projet ISIS pour la modélisation des professionnels de santé, des rôles, des organisations et des lieux d'exercice. Elle couvre également les instances associées pour fournir des exemples concrets.
 
-Ce guide propose une modélisation structurée des ressources clés du système hospitalier, en conformité avec le standard HL7® FHIR R5. Il vise à faciliter l'interopérabilité entre les systèmes d'information de santé, en s'appuyant sur des profils personnalisés adaptés au contexte français (RPPS, structures, affectations...).
+---
 
-## Ressources couvertes
+## Profils personnalisés
 
-- **Practitioner** : professionnels de santé enregistrés dans le RPPS, avec profil `ISISPractitioner`.
-- **PractitionerRole** : affectation des soignants à une structure et un lieu, avec profil `ISISPractitionerRole`.
-- **Organization** : structure de soins (ex. CHU, clinique, cabinet), identifiée par un SIRET, avec profil `ISISOrganization`.
-- **Location** : lieu d’exercice (cabinet, bâtiment, service hospitalier), avec profil `ISISLocation`.
+### 1. `ISISPractitioner` — Praticien
 
-## Objectifs du guide
+**Basé sur** : `Practitioner`
 
-- Fournir une base de modélisation commune pour les établissements de santé
-- Documenter les contraintes minimales pour chaque type de ressource
-- Proposer des exemples réalistes et réutilisables
-- Soutenir les équipes projets dans leurs démarches d’implémentation FHIR
+**Description** : Représente un professionnel de santé enregistré au RPPS.
 
-## Contexte d'utilisation
+**Contraintes** :
 
-Ce guide s'inscrit dans le cadre de la digitalisation du système de santé et s’adresse aux éditeurs de logiciels, établissements publics ou privés, et aux intégrateurs souhaitant structurer leurs données FHIR autour des affectations de soignants, des lieux et des structures hospitalières.
+* `meta.profile` : obligatoire (1..1)
+* `identifier` : obligatoire (1..1), avec `system = https://esante.gouv.fr/produits-services/repertoire-rpps`
+* `name` : obligatoire (1..1)
+* `telecom` : optionnel (0..\*)
+
+---
+
+### 2. `ISISPractitionerRole` — Rôle du praticien
+
+**Basé sur** : `PractitionerRole`
+
+**Description** : Représente l'affectation d'un praticien à une organisation.
+
+**Contraintes** :
+
+* `meta.profile` : obligatoire (1..1)
+* `identifier` : obligatoire (1..1), avec `system = https://esante.gouv.fr/produits-services/repertoire-rpps`
+* `practitioner` : obligatoire (1..1)
+* `organization` : obligatoire (1..1)
+* `code` : obligatoire (1..1), avec terminologie SNOMED CT
+
+---
+
+### 3. `ISISOrganization` — Organisation de santé
+
+**Basé sur** : `Organization`
+
+**Description** : Représente une structure sanitaire identifiée par l’INSEE.
+
+**Contraintes** :
+
+* `identifier` : obligatoire (1..1), avec `system = https://esante.gouv.fr/annuaire/identifiants-structure`
+* `name` : obligatoire (1..1)
+* `type` : obligatoire (1..1)
+* `contact` : au moins 1 (1..\*)
+
+    * `address` : obligatoire (1..1)
+    * `telecom` : au moins 1 (1..\*)
+
+---
+
+### 4. `ISISLocation` — Lieu d’exercice
+
+**Basé sur** : `Location`
+
+**Description** : Représente un lieu physique d’exercice (établissement, UF, cabinet, etc.).
+
+**Contraintes** :
+
+* `identifier` : slicing sur `system`
+
+    * Slice `ufNumber` (0..1)
+    * `system = http://our-organization/identifiers/uf-numero`
+* `name` : obligatoire (1..1)
+* `type` : obligatoire (1..1)
+* `type.text` : optionnel (0..1)
+* `mode` : `#instance` obligatoire
+* `partOf` : optionnel (0..1)
+* `managingOrganization` : obligatoire (1..1)
+* `address` : optionnel (0..1)
+
+---
+
+## Instances d’exemple
+
+### `CHUToulouse` — Organisation
+
+* Identifiant INSEE : `31078123400017`
+* Type : `Healthcare Provider`
+* Téléphone : `+33561777777`
+* Email : `contact@chu-toulouse.fr`
+
+### `CHUdeSfax` — Location
+
+* Type : `Hospital`
+* Adresse : `17 rue joseph, Sfax, 35588, FR`
+* Organisation gestionnaire : CHU de Toulouse
+
+### `ServiceCardiologie` — Location
+
+* Identifiant UF : `7795`
+* Type : `Ward-Service`
+* Organisation gestionnaire : CHU de Toulouse
+
+### `ServicePneumologie` — Location
+
+* Identifiant UF : `1254`
+* Aile : `Ouest` (via extension)
+* Organisation gestionnaire : CHU de Toulouse
+
+### `RomainNtamack` — Practitioner
+
+* RPPS : `22233445566`
+* Téléphone pro : `+33561611777`
+* Email : `romain.ntamack@chu-toulouse.fr`
+
+### `AffectationNtamack` — PractitionerRole
+
+* Praticien : Romain Ntamack
+* Organisation : CHU de Toulouse
+* Rôle : Infirmier (SNOMED : `159738005`)
+
+---
+
+## Version & Conformité
+
+* FHIR Version : R5
+* Auteur : Projet ISIS — École d’ingénieurs en e-santé
+* Version du modèle : 1.0.0
+* Date : Juin 2025
