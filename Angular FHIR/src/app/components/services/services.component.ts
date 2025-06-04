@@ -120,13 +120,9 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       country: ['FR', Validators.required]
     });
     
-    // Initialiser le formulaire d'édition UF
+    // Initialiser le formulaire d'édition UF (SANS ufNumero)
     this.editUFForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      // ufNumero: ['', [
-      //   Validators.required, 
-      //   Validators.pattern('^[0-9]{4,6}$')
-      // ], [this.ufNumeroUniqueValidator()]],
       status: ['active', Validators.required],
       description: [''],
       etablissementId: ['', Validators.required],
@@ -289,6 +285,14 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     
     return ufIdentifier ? ufIdentifier.value : 'N° non spécifié';
+  }
+
+  // Récupérer le numéro UF de l'UF en cours d'édition
+  getEditingUFNumero(): string {
+    if (this.editingUF) {
+      return this.getUFNumero(this.editingUF);
+    }
+    return 'N° non spécifié';
   }
   
   // Récupérer la localisation d'une UF
@@ -461,19 +465,15 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
   editUF(uf: any) {
     console.log('Édition de l\'UF:', uf);
     
-    // Extraire le numéro UF
-    // const ufNumero = this.getUFNumero(uf);
-    
     // Extraire l'ID de l'établissement parent
     const etablissementId = this.extractEtablissementId(uf);
     
     // Extraire les informations de localisation
     const locationInfo = this.extractUFLocationInfo(uf);
     
-    // Remplir le formulaire d'édition avec les données de l'UF
+    // Remplir le formulaire d'édition avec les données de l'UF (SANS ufNumero dans le FormGroup)
     this.editUFForm.patchValue({
       name: uf.name || '',
-      // ufNumero: ufNumero !== 'N° non spécifié' ? ufNumero : '',
       status: uf.status || 'active',
       description: uf.description || '',
       etablissementId: etablissementId || '',
@@ -513,7 +513,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  // Sauvegarder les modifications de l'UF
+  // Sauvegarder les modifications de l'UF (SANS toucher à l'identifier existant)
   onSaveEditUF() {
     if (this.editUFForm.valid && this.editingUFId) {
       console.log('Sauvegarde des modifications UF:', this.editUFForm.value);
@@ -525,42 +525,13 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
         roomNumber: this.editUFForm.get('roomNumber')?.value
       };
       
-      // Construire l'objet UF modifié
+      // Construire l'objet UF modifié en fusionnant avec l'existant
       const updatedUF = {
-        resourceType: 'Location',
-        id: this.editingUFId,
+        ...this.editingUF,  // Garder TOUTES les données existantes (y compris identifier)
+        // Puis écraser seulement les champs qu'on veut modifier
         name: this.editUFForm.get('name')?.value,
         description: this.editUFForm.get('description')?.value,
         status: this.editUFForm.get('status')?.value,
-        mode: 'instance',
-        identifier: [
-          {
-            system: 'http://our-organization/identifiers/uf-numero',
-            value: this.editUFForm.get('ufNumero')?.value,
-            use: 'official'
-          }
-        ],
-        type: [
-          {
-            coding: [
-              {
-                system: 'http://terminology.hl7.org/CodeSystem/location-type',
-                code: 'ws',
-                display: 'Ward-Service'
-              }
-            ],
-            text: "Unité Fonctionnelle"
-          }
-        ],
-        physicalType: {
-          coding: [
-            {
-              system: 'http://terminology.hl7.org/CodeSystem/location-physical-type',
-              code: 'wa',
-              display: 'Ward'
-            }
-          ]
-        },
         partOf: {
           reference: `Location/${this.editUFForm.get('etablissementId')?.value}`,
           display: this.getEtablissementName(this.editUFForm.get('etablissementId')?.value)
@@ -568,7 +539,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
         address: {
           use: this.editUFForm.get('addressUse')?.value
         },
-        // Utiliser la nouvelle méthode pour créer les extensions
+        // Mettre à jour les extensions de localisation
         extension: this.createLocationExtensions(locationData)
       };
 
@@ -597,8 +568,6 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
             errorMessage = 'UF non trouvée';
           } else if (error.status === 403) {
             errorMessage = 'Vous n\'avez pas les droits pour modifier cette UF';
-          } else if (error.status === 409) {
-            errorMessage = 'Conflit: le numéro UF est déjà utilisé';
           } else if (error.message) {
             errorMessage = `Erreur: ${error.message}`;
           }
@@ -632,26 +601,15 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       return `Ce champ doit contenir au moins ${control.errors['minlength'].requiredLength} caractères.`;
     }
     
-    if (control.errors?.['pattern']) {
-      if (fieldName === 'ufNumero') {
-        return 'Le numéro UF doit être composé de 4 à 6 chiffres uniquement.';
-      }
-      return 'Format invalide.';
-    }
-    
-    if (control.errors?.['ufNumeroExists']) {
-      return 'Ce numéro UF est déjà utilisé.';
-    }
-    
     return '';
   }
 
-  // Vérifier si on peut sauvegarder l'UF (logique plus intelligente)
-  canSaveUF(): boolean {
+  // Vérifier si on peut sauvegarder l'UF en mode ÉDITION (sans numéro UF)
+  canSaveEditUF(): boolean {
     if (!this.editUFForm) return false;
     
-    // Vérifier les champs requis
-    const requiredFields = ['name', 'ufNumero', 'status', 'etablissementId'];
+    // Vérifier les champs requis (SANS ufNumero pour l'édition)
+    const requiredFields = ['name', 'status', 'etablissementId'];
     const hasRequiredFields = requiredFields.every(field => {
       const control = this.editUFForm.get(field);
       return control && control.value && control.value.trim() !== '';
@@ -659,9 +617,33 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     
     if (!hasRequiredFields) return false;
     
-    // Vérifier les erreurs importantes (sauf ufNumeroExists si c'est la même UF)
+    // Vérifier les erreurs de format
     const nameControl = this.editUFForm.get('name');
-    const ufNumeroControl = this.editUFForm.get('ufNumero');
+    
+    // Erreurs de format pour le nom
+    if (nameControl?.errors?.['minlength']) {
+      return false;
+    }
+    
+    return true;
+  }
+
+  // Vérifier si on peut créer une UF (avec numéro UF requis)
+  canCreateUF(): boolean {
+    if (!this.myForm) return false;
+    
+    // Pour la création, le numéro UF EST requis
+    const requiredFields = ['name', 'status', 'typeCode', 'etablissementId', 'ufNumero'];
+    const hasRequiredFields = requiredFields.every(field => {
+      const control = this.myForm.get(field);
+      return control && control.value && control.value.trim() !== '';
+    });
+    
+    if (!hasRequiredFields) return false;
+    
+    // Vérifier les erreurs importantes
+    const nameControl = this.myForm.get('name');
+    const ufNumeroControl = this.myForm.get('ufNumero');
     
     // Erreurs de format
     if (nameControl?.errors?.['minlength'] || 
@@ -669,16 +651,8 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
     
-    // Pour ufNumeroExists, vérifier si c'est un nouveau numéro ou le même
+    // Pour ufNumeroExists, c'est toujours une erreur en création
     if (ufNumeroControl?.errors?.['ufNumeroExists']) {
-      const currentUfNumero = this.getUFNumero(this.editingUF);
-      const newUfNumero = ufNumeroControl.value;
-      
-      // Si c'est le même numéro que l'UF actuelle, c'est OK
-      if (currentUfNumero === newUfNumero) {
-        return true;
-      }
-      // Si c'est un nouveau numéro et qu'il existe déjà, erreur
       return false;
     }
     

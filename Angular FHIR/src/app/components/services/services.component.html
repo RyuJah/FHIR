@@ -300,7 +300,7 @@
                 <span class="value">{{ myForm.get('name')?.value }}</span>
               </div>
               <div class="summary-item">
-                <span class="label">ZADIG:</span> 
+                <span class="label">Numéro UF:</span> 
                 <span class="value">{{ myForm.get('ufNumero')?.value }}</span>
               </div>
               
@@ -357,7 +357,8 @@
           Suivant
         </button>
         
-        <button *ngIf="currentSlide === totalSlides - 1" type="submit" class="btn btn-success" [disabled]="!myForm.valid">
+        <!-- Utilisation de canCreateUF() pour le bouton de création -->
+        <button *ngIf="currentSlide === totalSlides - 1" type="submit" class="btn btn-success" [disabled]="!canCreateUF()">
           Créer l'unité fonctionnelle
         </button>
       </div>
@@ -494,6 +495,20 @@
               <i class="bi bi-info-circle"></i>
               Informations générales
             </h4>
+
+            <!-- Affichage du numéro UF en lecture seule avec style badge -->
+            <div class="info-box uf-numero-display">
+              <div class="info-content">
+                <div class="info-label">
+                  <i class="bi bi-tag"></i>
+                  Numéro UF :
+                </div>
+                <div class="info-value">
+                  <span class="badge bg-primary">{{ getEditingUFNumero() }}</span>
+                </div>
+              </div>
+              <small class="text-muted">Ce numéro ne peut pas être modifié</small>
+            </div>
             
             <div class="form-group">
               <label for="editUfName">Nom de l'unité fonctionnelle <span class="required">*</span></label>
@@ -509,36 +524,19 @@
               </div>
             </div>
 
-            <div class="form-row">
-              <!-- <div class="form-group">
-                <label for="editUfNumero">Numéro UF (unique) <span class="required">*</span></label>
-                <input 
-                  type="text" 
-                  id="editUfNumero" 
-                  formControlName="ufNumero" 
-                  placeholder="Ex: 1234"
-                  [class.is-invalid]="isEditUFFieldInvalid('ufNumero')"
-                >
-                <small class="form-text">Doit être composé de 4 à 6 chiffres et doit être unique.</small>
-                <div *ngIf="isEditUFFieldInvalid('ufNumero')" class="error-message">
-                  {{ getEditUFErrorMessage('ufNumero') }}
-                </div>
-              </div> -->
-              
-              <div class="form-group">
-                <label for="editUfStatus">Statut <span class="required">*</span></label>
-                <select 
-                  id="editUfStatus" 
-                  formControlName="status"
-                  [class.is-invalid]="isEditUFFieldInvalid('status')"
-                >
-                  <option value="active">Actif</option>
-                  <option value="suspended">Suspendu</option>
-                  <option value="inactive">Inactif</option>
-                </select>
-                <div *ngIf="isEditUFFieldInvalid('status')" class="error-message">
-                  {{ getEditUFErrorMessage('status') }}
-                </div>
+            <div class="form-group">
+              <label for="editUfStatus">Statut <span class="required">*</span></label>
+              <select 
+                id="editUfStatus" 
+                formControlName="status"
+                [class.is-invalid]="isEditUFFieldInvalid('status')"
+              >
+                <option value="active">Actif</option>
+                <option value="suspended">Suspendu</option>
+                <option value="inactive">Inactif</option>
+              </select>
+              <div *ngIf="isEditUFFieldInvalid('status')" class="error-message">
+                {{ getEditUFErrorMessage('status') }}
               </div>
             </div>
 
@@ -630,10 +628,11 @@
               <i class="bi bi-x-circle"></i>
               Annuler
             </button>
+            <!-- Utilisation de canSaveEditUF() pour le bouton de sauvegarde -->
             <button 
               type="submit" 
               class="btn btn-primary" 
-              [disabled]="!canSaveUF()"
+              [disabled]="!canSaveEditUF()"
             >
               <i class="bi bi-check-circle"></i>
               Enregistrer les modifications
@@ -644,3 +643,39 @@
     </div>
   </div>
 </div>
+
+<!-- CSS pour l'info-box du numéro UF -->
+<style>
+.uf-numero-display {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.info-value .badge {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.uf-numero-display .text-muted {
+  font-size: 0.875rem;
+  margin: 0;
+}
+</style>
