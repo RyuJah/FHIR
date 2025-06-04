@@ -24,7 +24,7 @@ export class UnitviewComponent implements OnInit {
         this.uniteFonctionnelles = ufs;
         if (ufs.length > 0) {
           console.log(ufs);
-          this.afficherMedecins(ufs[0]); // Sélectionne la première UF automatiquement
+          this.afficherMedecins(ufs[0]); 
         }
       },
       error: (err: any) => {

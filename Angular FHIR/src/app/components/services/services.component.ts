@@ -444,7 +444,6 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     // Afficher le formulaire d'établissement
     this.showAddEtablissementForm = true;
     
-    // Optionnel : faire défiler pour afficher le formulaire
     setTimeout(() => {
       const formElement = document.querySelector('.add-etablissement-form');
       if (formElement) {
@@ -527,8 +526,8 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       
       // Construire l'objet UF modifié en fusionnant avec l'existant
       const updatedUF = {
-        ...this.editingUF,  // Garder TOUTES les données existantes (y compris identifier)
-        // Puis écraser seulement les champs qu'on veut modifier
+        ...this.editingUF,  
+        //  écraser seulement les champs qu'on veut modifier
         name: this.editUFForm.get('name')?.value,
         description: this.editUFForm.get('description')?.value,
         status: this.editUFForm.get('status')?.value,
@@ -576,7 +575,6 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     } else {
-      // Marquer tous les champs comme touchés pour afficher les erreurs
       this.validateAllFormFields(this.editUFForm);
       this.showPopupMessage('Le formulaire contient des erreurs. Veuillez les corriger.', 'error');
     }
@@ -651,7 +649,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
       return false;
     }
     
-    // Pour ufNumeroExists, c'est toujours une erreur en création
+    // Pour ufNumeroExists => error
     if (ufNumeroControl?.errors?.['ufNumeroExists']) {
       return false;
     }
@@ -791,7 +789,7 @@ export class ServicesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showAddEtablissementForm = !this.showAddEtablissementForm;
   }
   
-  // TOUJOURS réinitialiser le formulaire complètement
+  // réinit le formulaire complètement
   this.etablissementForm.reset({
     name: '',
     status: 'active',
@@ -887,7 +885,7 @@ deleteEtablissement(etab: any): void {
   const ufsCount = this.getUFsForEtablissement(etab.id).length;
   
   if (ufsCount > 0) {
-    // Si l'établissement contient des UF, empêcher la suppression
+    // Si l'établissement contient des UF on empeche la suppression
     this.showPopupMessage(
       `Impossible de supprimer l'établissement "${etab.name}". Il contient ${ufsCount} unité(s) fonctionnelle(s). Veuillez d'abord supprimer toutes les UF.`, 
       'error'
@@ -992,9 +990,7 @@ private refreshEtablissementsList(): void {
 }
     };
       
-     // Logique de sauvegarde (POST/PUT)
     if (this.isEditingEtablissement && this.editingEtablissementId) {
-      // PUT - Mode édition
       this.fhirService.updateEtablissement(this.editingEtablissementId, etablissement).subscribe({
         next: (response) => {
           console.log('Établissement mis à jour avec succès:', response);

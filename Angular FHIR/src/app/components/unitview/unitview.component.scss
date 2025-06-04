@@ -255,7 +255,6 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
   }
 }
-/* Style pour les titres "Liste des Médecins" et "Médecins de l'UF" */
 .practitioners-container h1,
 .practitioners-container h2 {
   color: #2c3e50;
@@ -273,7 +272,6 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   letter-spacing: 1px;
 }
 
-/* Effet de soulignement décoratif */
 .practitioners-container h1::after,
 .practitioners-container h2::after {
   content: '';
@@ -287,7 +285,6 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-radius: 2px;
 }
 
-/* Animation d'apparition */
 .practitioners-container h1,
 .practitioners-container h2 {
   animation: fadeInDown 0.8s ease-out;
@@ -304,14 +301,12 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }
 
-/* Effet hover subtil */
 .practitioners-container h1:hover,
 .practitioners-container h2:hover {
   transform: scale(1.02);
   transition: transform 0.3s ease;
 }
 
-/* Responsivité pour mobile */
 @media (max-width: 768px) {
   .practitioners-container h1,
   .practitioners-container h2 {

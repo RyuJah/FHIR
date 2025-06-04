@@ -44,7 +44,6 @@ export class DoctorsComponent implements OnInit {
 
 
 
-  // Pour la gestion du carrousel
   slides = [
     {
       active: true,

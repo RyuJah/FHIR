@@ -6,10 +6,8 @@
 </div>
 
 <div class="page-container">
-  <!-- Panneau latéral gauche -->
   <div class="side-panel left-panel">
     <div class="slide-container">
-      <!-- Utilisez *ngFor pour créer les slides de manière dynamique -->
       <div *ngFor="let slide of slides" class="slide" [class.active]="slide.active">
         <img [src]="slide.imageUrl" [alt]="slide.title">
         <div class="info-overlay">
@@ -20,7 +18,6 @@
     </div>
   </div>
 
-  <!-- Contenu principal (formulaire) -->
   <div class="main-content">
     <h2>Créer une Unité Fonctionnelle</h2>
     
@@ -33,12 +30,10 @@
       </div>
       
       <swiper-container #swiper allowTouchMove="false">
-        <!-- Page 1: Informations générales -->
         <swiper-slide>
           <div class="slide-content">
             <h3>Informations générales</h3>
             
-            <!-- Nom de l'unité fonctionnelle -->
             <div class="form-group">
               <label for="name">Nom de l'unité fonctionnelle</label>
               <input 
@@ -52,7 +47,6 @@
               </div>
             </div>
            
-            <!-- UF Numérique unique -->
             <div class="form-group">
               <label for="ufNumero">Numéro UF (unique)</label>
               <input 
@@ -67,7 +61,6 @@
               </div>
             </div>
             
-            <!-- Description -->
             <div class="form-group">
               <label for="description">Description</label>
               <textarea
@@ -78,7 +71,6 @@
               ></textarea>
             </div>
             
-            <!-- Statut -->
             <div class="form-group">
               <label for="status">Statut</label>
               <select 
@@ -94,7 +86,6 @@
               </div>
             </div>
             
-            <!-- Établissement parent -->
             <div class="form-group">
               <label for="etablissementId">Établissement parent</label>
               <div class="etablissement-selection">
@@ -134,14 +125,12 @@
               </div>
             </div>
             
-            <!-- Formulaire pour ajouter/modifier un établissement -->
             <div *ngIf="showAddEtablissementForm" class="add-etablissement-form">
               <h4>
                 <i class="bi" [ngClass]="{'bi-pencil-square': isEditingEtablissement, 'bi-plus-circle': !isEditingEtablissement}"></i>
                 {{ isEditingEtablissement ? 'Modifier l\'établissement' : 'Ajouter un nouvel établissement' }}
               </h4>
               
-              <!-- Indicateur du mode édition -->
               <div *ngIf="isEditingEtablissement" class="edit-mode-indicator">
                 <div class="alert alert-info">
                   <i class="bi bi-info-circle"></i>
@@ -232,12 +221,10 @@
           </div>
         </swiper-slide>
         
-        <!-- Page 2: Informations de localisation dans l'établissement -->
         <swiper-slide>
           <div class="slide-content">
             <h3>Localisation dans l'établissement</h3>
             
-            <!-- Étage -->
             <div class="form-group">
               <label for="floor">Étage</label>
               <input
@@ -248,7 +235,6 @@
               >
             </div>
             
-            <!-- Aile/Bâtiment -->
             <div class="form-group">
               <label for="wing">Aile/Bâtiment</label>
               <input
@@ -259,7 +245,6 @@
               >
             </div>
             
-            <!-- Numéro de salle -->
             <div class="form-group">
               <label for="roomNumber">Numéro de salle</label>
               <input
@@ -270,7 +255,6 @@
               >
             </div>
             
-            <!-- Adresse - Utilisation -->
             <div class="form-group">
               <label for="addressUse">Type d'adresse</label>
               <select 
@@ -288,7 +272,6 @@
           </div>
         </swiper-slide>
         
-        <!-- Page 3: Récapitulatif et soumission -->
         <swiper-slide>
           <div class="slide-content summary">
             <h3>Récapitulatif</h3>
@@ -347,7 +330,6 @@
       </swiper-container>
       
       <div class="form-navigation">
-        <!-- Bouton Précédent uniquement si currentSlide > 0 -->
         <button *ngIf="currentSlide > 0" type="button" class="btn btn-primary" (click)="previousSlide()">
           Précédent
         </button>
@@ -357,7 +339,6 @@
           Suivant
         </button>
         
-        <!-- Utilisation de canCreateUF() pour le bouton de création -->
         <button *ngIf="currentSlide === totalSlides - 1" type="submit" class="btn btn-success" [disabled]="!canCreateUF()">
           Créer l'unité fonctionnelle
         </button>
@@ -365,7 +346,6 @@
     </form>
   </div>
 
-  <!-- Panneau latéral droit : Liste des établissements et UF -->
   <div class="side-panel right-panel">
     <div class="panel-header">
       <h2>Établissements et Unités Fonctionnelles</h2>
@@ -421,7 +401,6 @@
           </button>
         </div>
         
-        <!-- UF liées à l'établissement -->
         <div *ngIf="etab.expanded" class="uf-container">
           <div *ngIf="isLoadingUFs(etab.id)" class="loading-indicator sm">
             <div class="spinner sm"></div>
@@ -473,7 +452,6 @@
   </div>
 </div>
 
-<!-- Modal d'édition UF -->
 <div *ngIf="showEditUFModal" class="modal modal-uf-edit fade show" id="editUFModal" 
      style="display: block;" tabindex="-1" aria-labelledby="editUFModalLabel" 
      [style.background-color]="'rgba(0,0,0,0.5)'">
@@ -489,14 +467,12 @@
       
       <div class="modal-body">
         <form [formGroup]="editUFForm" (ngSubmit)="onSaveEditUF()">
-          <!-- Section Informations générales -->
           <div class="form-section">
             <h4>
               <i class="bi bi-info-circle"></i>
               Informations générales
             </h4>
 
-            <!-- Affichage du numéro UF en lecture seule avec style badge -->
             <div class="info-box uf-numero-display">
               <div class="info-content">
                 <div class="info-label">
@@ -568,7 +544,6 @@
             </div>
           </div>
 
-          <!-- Section Localisation -->
           <div class="form-section">
             <h4>
               <i class="bi bi-geo-alt"></i>
@@ -621,14 +596,11 @@
               </div>
             </div>
           </div>
-
-          <!-- Boutons d'action -->
           <div class="btn-group-custom">
             <button type="button" class="btn btn-secondary" (click)="closeEditUFModal()">
               <i class="bi bi-x-circle"></i>
               Annuler
             </button>
-            <!-- Utilisation de canSaveEditUF() pour le bouton de sauvegarde -->
             <button 
               type="submit" 
               class="btn btn-primary" 
@@ -644,38 +616,3 @@
   </div>
 </div>
 
-<!-- CSS pour l'info-box du numéro UF -->
-<style>
-.uf-numero-display {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 0.375rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.info-content {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.info-label {
-  font-weight: 500;
-  color: #495057;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.info-value .badge {
-  font-size: 0.9rem;
-  padding: 0.5rem 0.75rem;
-}
-
-.uf-numero-display .text-muted {
-  font-size: 0.875rem;
-  margin: 0;
-}
-</style>

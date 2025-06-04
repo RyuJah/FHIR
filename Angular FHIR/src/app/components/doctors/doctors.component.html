@@ -1,16 +1,13 @@
 <div class="practitioners-container">
   <h1>Liste des Médecins</h1>
 
-  <!-- État de chargement -->
   <div *ngIf="isLoading" class="loading-container">
     Chargement des praticiens...
   </div>
 
-  <!-- Erreur de chargement -->
   <div *ngIf="loadingError" class="error-container">
     Erreur lors du chargement des praticiens.
   </div>
-  <!-- Tableau des praticiens -->
   <table *ngIf="!isLoading && !selectedPractitioner && practitioners.length > 0" 
          class="practitioners-table">
     <thead>
@@ -32,13 +29,11 @@
     </tbody>
   </table>
 
-  <!-- Message aucun praticien -->
   <div *ngIf="!isLoading && !selectedPractitioner && practitioners.length === 0" 
        class="no-practitioners">
     Aucun praticien trouvé.
   </div>
 
-  <!-- Détails du praticien sélectionné -->
   <div *ngIf="selectedPractitioner" class="practitioner-details">
     <div class="practitioner-image">
       <img *ngIf="selectedPractitioner.gender === 'female'" 

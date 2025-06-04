@@ -1,8 +1,4 @@
-// Style pour la mise en page en trois colonnes
-/* Styles pour le popup */
-/* Réinitialisation pour garantir que tout commence sans marges ni paddings */
-/* Styles pour le panneau latéral d'établissements et UF */
-/* Style pour les titres "Liste des Médecins", "Médecins de l'UF" et "Créer une Unité Fonctionnelle" */
+
 .practitioners-container h1,
 .practitioners-container h2,
 .main-content h2 {
@@ -1530,6 +1526,7 @@ textarea {
   }
 }
 
+
 // Responsive adjustments
 @media (max-width: 768px) {
   .modal-uf-edit {
@@ -1546,4 +1543,36 @@ textarea {
       padding: 1rem;
     }
   }
+  .uf-numero-display {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.info-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.info-label {
+  font-weight: 500;
+  color: #495057;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.info-value .badge {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.uf-numero-display .text-muted {
+  font-size: 0.875rem;
+  margin: 0;
+}
 }
