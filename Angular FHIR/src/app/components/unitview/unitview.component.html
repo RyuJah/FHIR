@@ -1,0 +1,40 @@
+<div class="uf-list">
+  <div
+    class="uf-card"
+    *ngFor="let uf of uniteFonctionnelles"
+    (click)="afficherMedecins(uf)"
+    style="cursor:pointer"
+  ><h3>{{ uf.name }}</h3>
+    <!--<p><strong>Statut :</strong> {{ uf.status }}</p>-->
+    <p><strong>Établissement :</strong> {{ uf.partOf?.display || 'Non renseigné' }}</p>
+    <p><strong>Description :</strong> {{ uf.description || 'Aucune description' }}</p>
+    <p><strong>Type :</strong> {{ uf.type?.[0]?.text || 'Non spécifié' }}</p>
+  </div>
+</div>
+
+<div class="practitioners-container">
+  <h2>Médecins de l’UF : {{ ufSelectionnee.name }}</h2>
+
+  <!-- Tableau des praticiens -->
+  <table *ngIf="ufSelectionnee && medecins.length > 0" class="practitioners-table">
+    <thead>
+    <tr>
+      <th>Nom</th>
+      <th>Prénom</th>
+      <th>Téléphone</th>
+      <th>Email</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let medecin of medecins" (click)="voirDetailDoctor(medecin)">
+      <td>{{ medecin.family }}</td>
+      <td>{{ medecin.given }}</td>
+      <td>{{ medecin.phone || '-' }}</td>
+      <td>{{ medecin.email || '-' }}</td>
+    </tr>
+    </tbody>
+  </table>
+  <div *ngIf="ufSelectionnee && medecins.length === 0" class="no-practitioners">
+    Aucun praticien trouvé.
+  </div>
+</div>

@@ -1,79 +1,618 @@
-<div class="container">
-  <h2>Formulaire Réactif</h2>
-  
-  <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="form">
-    <div class="form-group">
-      <label for="name">Nom</label>
-      <input 
-        type="text" 
-        id="name" 
-        formControlName="name" 
-        [class.is-invalid]="isFieldInvalid('name')"
-      >
-      <div *ngIf="isFieldInvalid('name')" class="error-message">
-        {{ getErrorMessage('name') }}
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input 
-        type="email" 
-        id="email" 
-        formControlName="email" 
-        [class.is-invalid]="isFieldInvalid('email')"
-      >
-      <div *ngIf="isFieldInvalid('email')" class="error-message">
-        {{ getErrorMessage('email') }}
-      </div>
-    </div>
-    
-    <button type="submit" class="btn">Soumettre</button>
-    
-    <div *ngIf="formStatus() !== ''" class="status-message" [class.success]="formStatus().includes('succès')">
-      {{ formStatus() }}
-    </div>
-  </form>
-  
-  <h2>Formulaire Basé sur Template</h2>
-  
-  <form #templateForm="ngForm" (ngSubmit)="onTemplateSubmit(templateForm)" class="form">
-    <div class="form-group">
-      <label for="template-name">Nom</label>
-      <input 
-        type="text" 
-        id="template-name" 
-        name="name" 
-        ngModel 
-        required 
-        minlength="3" 
-        #nameModel="ngModel" 
-        [class.is-invalid]="nameModel.invalid && (nameModel.touched || templateForm.submitted)"
-      >
-      <div *ngIf="nameModel.invalid && (nameModel.touched || templateForm.submitted)" class="error-message">
-        <div *ngIf="nameModel.errors?.['required']">Le nom est requis.</div>
-        <div *ngIf="nameModel.errors?.['minlength']">Le nom doit contenir au moins 3 caractères.</div>
-      </div>
-    </div>
-    
-    <div class="form-group">
-      <label for="template-email">Email</label>
-      <input 
-        type="email" 
-        id="template-email" 
-        name="email" 
-        ngModel 
-        required 
-        email 
-        #emailModel="ngModel" 
-        [class.is-invalid]="emailModel.invalid && (emailModel.touched || templateForm.submitted)"
-      >
-      <div *ngIf="emailModel.invalid && (emailModel.touched || templateForm.submitted)" class="error-message">
-        <div *ngIf="emailModel.errors?.['required']">L'email est requis.</div>
-        <div *ngIf="emailModel.errors?.['email']">Veuillez entrer une adresse email valide.</div>
-      </div>
-    </div>
-    
-    <button type="submit" class="btn">Soumettre</button>
-  </form>
+<div *ngIf="showPopup" class="popup-notification" [ngClass]="{'popup-success': popupType === 'success', 'popup-error': popupType === 'error'}">
+  <div class="popup-content">
+    <i [ngClass]="{'bi bi-check-circle-fill': popupType === 'success', 'bi bi-x-circle-fill': popupType === 'error'}"></i>
+    <p>{{ popupMessage }}</p>
+  </div>
 </div>
+
+<div class="page-container">
+  <div class="side-panel left-panel">
+    <div class="slide-container">
+      <div *ngFor="let slide of slides" class="slide" [class.active]="slide.active">
+        <img [src]="slide.imageUrl" [alt]="slide.title">
+        <div class="info-overlay">
+          <h3>{{ slide.title }}</h3>
+          <p>{{ slide.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <h2>Créer une Unité Fonctionnelle</h2>
+    
+    <form [formGroup]="myForm" (ngSubmit)="onSubmit()" class="form">
+      <div class="progress-bar">
+        <div class="progress" [style.width]="(currentSlide + 1) * (100 / totalSlides) + '%'"></div>
+      </div>
+      <div class="step-indicator">
+        Étape {{ currentSlide + 1 }} sur {{ totalSlides }}
+      </div>
+      
+      <swiper-container #swiper allowTouchMove="false">
+        <swiper-slide>
+          <div class="slide-content">
+            <h3>Informations générales</h3>
+            
+            <div class="form-group">
+              <label for="name">Nom de l'unité fonctionnelle</label>
+              <input 
+                type="text" 
+                id="name" 
+                formControlName="name"
+                placeholder="Ex: Service de Cardiologie"
+              >
+              <div *ngIf="isFieldInvalid('name')" class="error-message">
+                {{ getErrorMessage('name') }}
+              </div>
+            </div>
+           
+            <div class="form-group">
+              <label for="ufNumero">Numéro UF (unique)</label>
+              <input 
+                type="text" 
+                id="ufNumero" 
+                formControlName="ufNumero"
+                placeholder="Ex: 1234"
+              >
+              <small class="form-text text-muted">Doit être composé de 4 à 6 chiffres et doit être unique.</small>
+              <div *ngIf="isFieldInvalid('ufNumero')" class="error-message">
+                {{ getErrorMessage('ufNumero') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                formControlName="description"
+                placeholder="Description de l'unité fonctionnelle"
+                rows="2"
+              ></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label for="status">Statut</label>
+              <select 
+                id="status" 
+                formControlName="status" 
+              >
+                <option value="active">Actif</option>
+                <option value="suspended">Suspendu</option>
+                <option value="inactive">Inactif</option>
+              </select>
+              <div *ngIf="isFieldInvalid('status')" class="error-message">
+                {{ getErrorMessage('status') }}
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="etablissementId">Établissement parent</label>
+              <div class="etablissement-selection">
+                <select 
+                  id="etablissementId" 
+                  formControlName="etablissementId" 
+                  [disabled]="isLoading"
+                >
+                  <option value="" disabled selected>Sélectionnez un établissement</option>
+                  <option *ngFor="let etab of etablissements" [value]="etab.id">
+                    {{ etab.name }}
+                  </option>
+                </select>
+                
+                <button 
+                  type="button" 
+                  class="btn btn-secondary" 
+                  (click)="toggleAddEtablissementForm()" 
+                  [disabled]="isEditingEtablissement"
+                >
+                  <span *ngIf="showAddEtablissementForm && !isEditingEtablissement">Annuler</span>
+                  <span *ngIf="!showAddEtablissementForm || isEditingEtablissement">Nouvel établissement</span>
+                </button>
+              </div>
+              
+              <div *ngIf="isLoading" class="loading-message">
+                Chargement des établissements...
+              </div>
+              <div *ngIf="loadingError" class="error-message">
+                Erreur lors du chargement des établissements. 
+                <button type="button" class="btn btn-link" (click)="loadEtablissements()">
+                  Réessayer
+                </button>
+              </div>
+              <div *ngIf="isFieldInvalid('etablissementId')" class="error-message">
+                {{ getErrorMessage('etablissementId') }}
+              </div>
+            </div>
+            
+            <div *ngIf="showAddEtablissementForm" class="add-etablissement-form">
+              <h4>
+                <i class="bi" [ngClass]="{'bi-pencil-square': isEditingEtablissement, 'bi-plus-circle': !isEditingEtablissement}"></i>
+                {{ isEditingEtablissement ? 'Modifier l\'établissement' : 'Ajouter un nouvel établissement' }}
+              </h4>
+              
+              <div *ngIf="isEditingEtablissement" class="edit-mode-indicator">
+                <div class="alert alert-info">
+                  <i class="bi bi-info-circle"></i>
+                  Vous êtes en train de modifier un établissement existant.
+                </div>
+              </div>
+              
+              <form [formGroup]="etablissementForm" (ngSubmit)="onAddEtablissement()" class="etablissement-form">
+                <div class="form-group">
+                  <label for="etabName">Nom de l'établissement <span class="required">*</span></label>
+                  <input type="text" id="etabName" formControlName="name" required>
+                  <div *ngIf="isFieldInvalid('name', etablissementForm)" class="error-message">
+                    {{ getErrorMessage('name', etablissementForm) }}
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabStatus">Statut</label>
+                  <select id="etabStatus" formControlName="status">
+                    <option value="active">Actif</option>
+                    <option value="suspended">Suspendu</option>
+                    <option value="inactive">Inactif</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabTypeCode">Type d'établissement</label>
+                  <select id="etabTypeCode" formControlName="typeCode">
+                    <option value="ho">Hôpital</option>
+                    <option value="ward">Service</option>
+                    <option value="dept">Département</option>
+                    <option value="room">Salle</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabAddressUse">Type d'adresse</label>
+                  <select id="etabAddressUse" formControlName="addressUse">
+                    <option value="work">Travail</option>
+                    <option value="temp">Temporaire</option>
+                    <option value="old">Ancienne</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabAddressLine">Adresse</label>
+                  <input type="text" id="etabAddressLine" formControlName="addressLine" placeholder="Numéro et nom de rue">
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="etabCity">Ville <span class="required">*</span></label>
+                    <input type="text" id="etabCity" formControlName="city" required>
+                    <div *ngIf="isFieldInvalid('city', etablissementForm)" class="error-message">
+                      {{ getErrorMessage('city', etablissementForm) }}
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="etabPostalCode">Code postal <span class="required">*</span></label>
+                    <input type="text" id="etabPostalCode" formControlName="postalCode" required>
+                    <div *ngIf="isFieldInvalid('postalCode', etablissementForm)" class="error-message">
+                      {{ getErrorMessage('postalCode', etablissementForm) }}
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="etabCountry">Pays</label>
+                  <input type="text" id="etabCountry" formControlName="country" value="FR">
+                </div>
+                
+                <div class="form-buttons">
+                  <button type="button" class="btn btn-secondary" (click)="toggleAddEtablissementForm()">
+                    <i class="bi bi-x-circle"></i>
+                    {{ isEditingEtablissement ? 'Annuler la modification' : 'Annuler' }}
+                  </button>
+                  
+                  <button type="submit" class="btn" 
+                          [ngClass]="{'btn-warning': isEditingEtablissement, 'btn-primary': !isEditingEtablissement}"
+                          [disabled]="etablissementForm.invalid">
+                    <i class="bi" [ngClass]="{'bi-check-circle': isEditingEtablissement, 'bi-plus-circle': !isEditingEtablissement}"></i>
+                    {{ isEditingEtablissement ? 'Modifier l\'établissement' : 'Créer l\'établissement' }}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </swiper-slide>
+        
+        <swiper-slide>
+          <div class="slide-content">
+            <h3>Localisation dans l'établissement</h3>
+            
+            <div class="form-group">
+              <label for="floor">Étage</label>
+              <input
+                type="text"
+                id="floor"
+                formControlName="floor"
+                placeholder="Ex: 2, Rez-de-chaussée, etc."
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="wing">Aile/Bâtiment</label>
+              <input
+                type="text"
+                id="wing"
+                formControlName="wing"
+                placeholder="Ex: Aile Est, Pavillon B, etc."
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="roomNumber">Numéro de salle</label>
+              <input
+                type="text"
+                id="roomNumber"
+                formControlName="roomNumber"
+                placeholder="Ex: 204, A12, etc."
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="addressUse">Type d'adresse</label>
+              <select 
+                id="addressUse" 
+                formControlName="addressUse" 
+              >
+                <option value="work">Travail</option>
+                <option value="temp">Temporaire</option>
+                <option value="old">Ancienne</option>
+              </select>
+              <div *ngIf="isFieldInvalid('addressUse')" class="error-message">
+                {{ getErrorMessage('addressUse') }}
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+        
+        <swiper-slide>
+          <div class="slide-content summary">
+            <h3>Récapitulatif</h3>
+            
+            <div class="summary-section">
+              <h4>Informations générales</h4>
+              <div class="summary-item">
+                <span class="label">Nom de l'UF:</span> 
+                <span class="value">{{ myForm.get('name')?.value }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="label">Numéro UF:</span> 
+                <span class="value">{{ myForm.get('ufNumero')?.value }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Description:</span> 
+                <span class="value">{{ myForm.get('description')?.value || 'Non spécifiée' }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Statut:</span> 
+                <span class="value">{{ getStatusLabel(myForm.get('status')?.value) }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Type:</span> 
+                <span class="value">{{ getTypeLabel(myForm.get('typeCode')?.value) }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Établissement parent:</span> 
+                <span class="value">{{ getEtablissementName(myForm.get('etablissementId')?.value) }}</span>
+              </div>
+            </div>
+            
+            <div class="summary-section">
+              <h4>Localisation dans l'établissement</h4>
+              <div class="summary-item">
+                <span class="label">Étage:</span> 
+                <span class="value">{{ myForm.get('floor')?.value || 'Non spécifié' }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Aile/Bâtiment:</span> 
+                <span class="value">{{ myForm.get('wing')?.value || 'Non spécifié' }}</span>
+              </div>
+              
+              <div class="summary-item">
+                <span class="label">Numéro de salle:</span> 
+                <span class="value">{{ myForm.get('roomNumber')?.value || 'Non spécifié' }}</span>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper-container>
+      
+      <div class="form-navigation">
+        <button *ngIf="currentSlide > 0" type="button" class="btn btn-primary" (click)="previousSlide()">
+          Précédent
+        </button>
+        <div *ngIf="currentSlide === 0"></div>
+        
+        <button *ngIf="currentSlide < totalSlides - 1" type="button" class="btn btn-primary" (click)="nextSlide()">
+          Suivant
+        </button>
+        
+        <button *ngIf="currentSlide === totalSlides - 1" type="submit" class="btn btn-success" [disabled]="!canCreateUF()">
+          Créer l'unité fonctionnelle
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="side-panel right-panel">
+    <div class="panel-header">
+      <h2>Établissements et Unités Fonctionnelles</h2>
+      <div class="search-container">
+        <input type="text" placeholder="Rechercher..." [(ngModel)]="searchTerm" (input)="filterList()">
+        <i class="bi bi-search search-icon"></i>
+      </div>
+    </div>
+
+    <div class="etablissement-list">
+      <div *ngIf="isLoadingEtablissements" class="loading-indicator">
+        <div class="spinner"></div>
+        <span>Chargement des établissements...</span>
+      </div>
+      
+      <div *ngIf="!isLoadingEtablissements && etablissementsList.length === 0" class="empty-state">
+        <i class="bi bi-building-x"></i>
+        <p>Aucun établissement trouvé</p>
+        <button class="btn btn-outline-primary" (click)="toggleAddEtablissementForm()">
+          <i class="bi bi-plus-circle"></i> Ajouter un établissement
+        </button>
+      </div>
+
+      <div *ngFor="let etab of filteredEtablissements" class="etablissement-card">
+        <div class="etablissement-header" (click)="toggleEtablissement(etab)">
+          <div class="etab-info">
+            <h3>{{ etab.name }}</h3>
+            <span class="etab-details">{{ getEtablissementAddress(etab) }}</span>
+          </div>
+          <div class="etab-status" [ngClass]="{'active': etab.status === 'active', 'inactive': etab.status === 'inactive', 'suspended': etab.status === 'suspended'}">
+            {{ getStatusLabel(etab.status) }}
+          </div>
+          <i class="bi" [ngClass]="{'bi-chevron-down': etab.expanded, 'bi-chevron-right': !etab.expanded}"></i>
+        </div>
+
+        <div class="etablissement-actions">
+          <button class="btn btn-sm btn-outline-primary" (click)="selectEtablissement(etab)" title="Sélectionner cet établissement">
+            <i class="bi bi-check-circle"></i> Sélectionner
+          </button>
+          
+          <button class="btn btn-sm btn-outline-secondary" (click)="editEtablissement(etab)" title="Modifier cet établissement">
+            <i class="bi bi-pencil"></i> Éditer
+          </button>
+          
+          <button 
+            class="btn btn-sm"
+            [ngClass]="canDeleteEtablissement(etab) ? 'btn-outline-danger' : 'btn-outline-secondary'"
+            [title]="getDeleteEtablissementTooltip(etab)"
+            (click)="deleteEtablissement(etab)">
+            <i class="bi bi-trash"></i> 
+            <span *ngIf="!canDeleteEtablissement(etab)">🔒</span>
+            Supprimer
+          </button>
+        </div>
+        
+        <div *ngIf="etab.expanded" class="uf-container">
+          <div *ngIf="isLoadingUFs(etab.id)" class="loading-indicator sm">
+            <div class="spinner sm"></div>
+            <span>Chargement des UF...</span>
+          </div>
+          
+          <div *ngIf="!isLoadingUFs(etab.id) && getUFsForEtablissement(etab.id).length === 0" class="empty-state sm">
+            <p>Aucune unité fonctionnelle trouvée</p>
+            <button class="btn btn-sm btn-outline-primary" (click)="createNewUF(etab)">
+              <i class="bi bi-plus-circle"></i> Nouvelle UF
+            </button>
+          </div>
+          
+          <div *ngFor="let uf of getUFsForEtablissement(etab.id)" class="uf-card">
+            <div class="uf-info">
+              <div class="uf-title">
+                <h4>{{ uf.name }}</h4>
+                <span class="uf-numero">{{ getUFNumero(uf) }}</span>
+              </div>
+              <span class="uf-location" *ngIf="uf.description || getUFLocation(uf)">
+                <i class="bi bi-geo-alt"></i> {{ uf.description || getUFLocation(uf) }}
+              </span>
+              <div class="uf-status" [ngClass]="{'active': uf.status === 'active', 'inactive': uf.status === 'inactive', 'suspended': uf.status === 'suspended'}">
+                {{ getStatusLabel(uf.status) }}
+              </div>
+              
+              <div class="uf-actions">
+                <button class="btn btn-sm btn-outline-primary" (click)="editUF(uf)" title="Modifier cette UF">
+                  <i class="bi bi-pencil"></i> Éditer
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteUF(uf)" title="Supprimer cette UF">
+                  <i class="bi bi-trash"></i> Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-footer">
+      <button class="btn btn-primary" (click)="toggleAddEtablissementForm()">
+        <i class="bi bi-plus-circle"></i> Nouvel établissement
+      </button>
+      <button class="btn btn-outline-secondary" (click)="refreshList()">
+        <i class="bi bi-arrow-clockwise"></i> Actualiser
+      </button>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showEditUFModal" class="modal modal-uf-edit fade show" id="editUFModal" 
+     style="display: block;" tabindex="-1" aria-labelledby="editUFModalLabel" 
+     [style.background-color]="'rgba(0,0,0,0.5)'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUFModalLabel">
+          <i class="bi bi-pencil-square"></i>
+          Modifier l'Unité Fonctionnelle
+        </h5>
+        <button type="button" class="btn-close" (click)="closeEditUFModal()" aria-label="Fermer"></button>
+      </div>
+      
+      <div class="modal-body">
+        <form [formGroup]="editUFForm" (ngSubmit)="onSaveEditUF()">
+          <div class="form-section">
+            <h4>
+              <i class="bi bi-info-circle"></i>
+              Informations générales
+            </h4>
+
+            <div class="info-box uf-numero-display">
+              <div class="info-content">
+                <div class="info-label">
+                  <i class="bi bi-tag"></i>
+                  Numéro UF :
+                </div>
+                <div class="info-value">
+                  <span class="badge bg-primary">{{ getEditingUFNumero() }}</span>
+                </div>
+              </div>
+              <small class="text-muted">Ce numéro ne peut pas être modifié</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="editUfName">Nom de l'unité fonctionnelle <span class="required">*</span></label>
+              <input 
+                type="text" 
+                id="editUfName" 
+                formControlName="name" 
+                placeholder="Ex: Service de Cardiologie"
+                [class.is-invalid]="isEditUFFieldInvalid('name')"
+              >
+              <div *ngIf="isEditUFFieldInvalid('name')" class="error-message">
+                {{ getEditUFErrorMessage('name') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="editUfStatus">Statut <span class="required">*</span></label>
+              <select 
+                id="editUfStatus" 
+                formControlName="status"
+                [class.is-invalid]="isEditUFFieldInvalid('status')"
+              >
+                <option value="active">Actif</option>
+                <option value="suspended">Suspendu</option>
+                <option value="inactive">Inactif</option>
+              </select>
+              <div *ngIf="isEditUFFieldInvalid('status')" class="error-message">
+                {{ getEditUFErrorMessage('status') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="editUfDescription">Description</label>
+              <textarea 
+                id="editUfDescription" 
+                formControlName="description" 
+                placeholder="Description de l'unité fonctionnelle"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="editUfEtablissement">Établissement parent <span class="required">*</span></label>
+              <select 
+                id="editUfEtablissement" 
+                formControlName="etablissementId"
+                [class.is-invalid]="isEditUFFieldInvalid('etablissementId')"
+              >
+                <option value="" disabled>Sélectionnez un établissement</option>
+                <option *ngFor="let etab of etablissements" [value]="etab.id">
+                  {{ etab.name }}
+                </option>
+              </select>
+              <div *ngIf="isEditUFFieldInvalid('etablissementId')" class="error-message">
+                {{ getEditUFErrorMessage('etablissementId') }}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h4>
+              <i class="bi bi-geo-alt"></i>
+              Localisation dans l'établissement
+            </h4>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUfFloor">Étage</label>
+                <input 
+                  type="text" 
+                  id="editUfFloor" 
+                  formControlName="floor" 
+                  placeholder="Ex: 2, Rez-de-chaussée"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="editUfWing">Aile/Bâtiment</label>
+                <input 
+                  type="text" 
+                  id="editUfWing" 
+                  formControlName="wing" 
+                  placeholder="Ex: Aile Est, Pavillon B"
+                >
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUfRoomNumber">Numéro de salle</label>
+                <input 
+                  type="text" 
+                  id="editUfRoomNumber" 
+                  formControlName="roomNumber" 
+                  placeholder="Ex: 204, A12"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="editUfAddressUse">Type d'adresse</label>
+                <select 
+                  id="editUfAddressUse" 
+                  formControlName="addressUse"
+                >
+                  <option value="work">Travail</option>
+                  <option value="temp">Temporaire</option>
+                  <option value="old">Ancienne</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="btn-group-custom">
+            <button type="button" class="btn btn-secondary" (click)="closeEditUFModal()">
+              <i class="bi bi-x-circle"></i>
+              Annuler
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              [disabled]="!canSaveEditUF()"
+            >
+              <i class="bi bi-check-circle"></i>
+              Enregistrer les modifications
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+

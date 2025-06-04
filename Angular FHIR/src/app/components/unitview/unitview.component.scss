@@ -1,5 +1,8 @@
+// Import des modules Sass modernes
+
 @use 'sass:color';
 
+// Variables améliorées
 $primary-color: #007bff;
 $primary-light: #3395ff;
 $secondary-color: #6c757d;
@@ -18,8 +21,8 @@ $box-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
 $transition: all 0.3s ease;
 $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-* {
-  box-sizing: border-box;
+.practitioners-container h2 {
+  margin-bottom: 2rem;
 }
 
 .practitioners-container {
@@ -29,10 +32,11 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+// En-tête avec titre
 .page-header {
   text-align: center;
   margin-bottom: 3rem;
-  
+
   .page-title {
     font-size: 2.5rem;
     font-weight: 700;
@@ -45,7 +49,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     display: inline-block;
     position: relative;
     text-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
-    
+
     &::before {
       content: '👩‍⚕️';
       position: absolute;
@@ -55,7 +59,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       font-size: 2.2rem;
       animation: float 3s ease-in-out infinite;
     }
-    
+
     &::after {
       content: '👨‍⚕️';
       position: absolute;
@@ -73,6 +77,8 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   50% { transform: translateY(-50%) translateX(10px); }
 }
 
+
+// États de chargement améliorés
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -100,6 +106,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     margin-bottom: 1.5rem;
   }
 }
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -129,7 +136,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   font-weight: 600;
   margin-bottom: 2rem;
   box-shadow: $box-shadow;
-  
+
   &::before {
     content: '🔍';
     display: block;
@@ -145,6 +152,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   60% { transform: translateY(-5px); }
 }
 
+// Tableau moderne et élégant
 .practitioners-table {
   width: 100%;
   background: $white;
@@ -162,7 +170,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   thead {
     background: linear-gradient(135deg, $primary-color, $primary-light);
-    
+
     th {
       color: $white;
       font-weight: 600;
@@ -207,7 +215,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       border-bottom: 1px solid rgba(0, 123, 255, 0.1);
       transition: $transition-smooth;
       position: relative;
-      
+
       &:hover {
         background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(51, 149, 255, 0.05));
         cursor: pointer;
@@ -217,16 +225,16 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
       &:last-child {
         border-bottom: none;
-        
+
         td:first-child {
           border-bottom-left-radius: $border-radius-lg;
         }
-        
+
         td:last-child {
           border-bottom-right-radius: $border-radius-lg;
         }
       }
-      
+
       td {
         color: $text-dark;
         padding: 1.2rem 1rem;
@@ -234,7 +242,7 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         font-size: 0.95rem;
         text-align: center;
         transition: $transition;
-        
+
         &:first-child {
           font-weight: 600;
           color: $primary-color;
@@ -247,222 +255,8 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
   }
 }
-
-.practitioner-details {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 2.5rem;
-  background: $white;
-  border-radius: $border-radius-lg;
-  padding: 2.5rem;
-  box-shadow: $box-shadow-hover;
-  margin-top: 2rem;
-  border: 2px solid rgba(0, 123, 255, 0.1);
-  
-  .practitioner-image {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    
-    img {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 5px solid $primary-color;
-      box-shadow: 0 8px 25px rgba(0, 123, 255, 0.2);
-      transition: $transition-smooth;
-      position: relative;
-      
-      &:hover {
-        transform: scale(1.08);
-        box-shadow: 0 12px 35px rgba(0, 123, 255, 0.3);
-        border-color: $primary-light;
-      }
-    }
-
-    &::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 240px;
-      height: 240px;
-      border: 2px solid rgba(0, 123, 255, 0.2);
-      border-radius: 50%;
-      animation: pulse 3s infinite;
-    }
-  }
-  
-  .main-content {
-    
-    h5 {
-      color: $text-dark;
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin-bottom: 2rem;
-      position: relative;
-      padding-bottom: 1rem;
-      
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 80px;
-        height: 4px;
-        background: linear-gradient(90deg, $primary-color, $primary-light);
-        border-radius: 2px;
-      }
-    }
-    
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 2.5rem;
-      
-      li {
-        background: linear-gradient(135deg, $light-gray, $lighter-gray);
-        margin-bottom: 1rem;
-        padding: 1.2rem 1.5rem;
-        border-radius: $border-radius;
-        border-left: 5px solid $primary-color;
-        color: $text-dark;
-        transition: $transition-smooth;
-        position: relative;
-        overflow: hidden;
-        
-        &::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(0, 123, 255, 0.05), rgba(51, 149, 255, 0.05));
-          opacity: 0;
-          transition: $transition;
-        }
-        
-        &:hover {
-          transform: translateX(8px);
-          box-shadow: 0 4px 15px rgba(0, 123, 255, 0.15);
-          border-left-color: $primary-light;
-          
-          &::before {
-            opacity: 1;
-          }
-        }
-        
-        strong {
-          color: $primary-color;
-          font-weight: 600;
-          margin-right: 0.8rem;
-          font-size: 1rem;
-        }
-      }
-    }
-  }
-}
-
-@keyframes pulse {
-  0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
-  50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.05); }
-  100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.95); }
-}
-
-.btn-back {
-  background: linear-gradient(135deg, $secondary-color, color.adjust($secondary-color, $lightness: -5%));
-  border: none;
-  color: $white;
-  padding: 1rem 2rem;
-  border-radius: $border-radius;
-  font-weight: 600;
-  cursor: pointer;
-  transition: $transition-smooth;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: $transition;
-  }
-  
-  &:hover {
-    background: linear-gradient(135deg, color.adjust($secondary-color, $lightness: -10%), color.adjust($secondary-color, $lightness: -15%));
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
-    
-    &::before {
-      left: 100%;
-    }
-  }
-  
-  &:active {
-    transform: translateY(-1px);
-  }
-}
-
-@media (max-width: 768px) {
-  .practitioners-container {
-    padding: 1rem;
-  }
-
-  .page-header .page-title {
-    font-size: 2rem;
-    padding: 1rem 2rem;
-    
-    &::before,
-    &::after {
-      display: none;
-    }
-  }
-  
-  .practitioner-details {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 2rem;
-    
-    .practitioner-image img {
-      width: 160px;
-      height: 160px;
-    }
-  }
-  
-  .practitioners-table {
-    font-size: 0.9rem;
-    
-    th, td {
-      padding: 1rem 0.8rem;
-    }
-  }
-}
-
-.table {
-  &.practitioners-table {
-    border: none;
-    margin-bottom: 0;
-  }
-}
-
-*:focus-visible {
-  outline: 2px solid $primary-color;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.practitioners-container h1 {
+.practitioners-container h1,
+.practitioners-container h2 {
   color: #2c3e50;
   font-size: 2.5rem;
   font-weight: 700;
@@ -478,7 +272,8 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   letter-spacing: 1px;
 }
 
-.practitioners-container h1::after {
+.practitioners-container h1::after,
+.practitioners-container h2::after {
   content: '';
   position: absolute;
   bottom: 0.5rem;
@@ -490,7 +285,8 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border-radius: 2px;
 }
 
-.practitioners-container h1 {
+.practitioners-container h1,
+.practitioners-container h2 {
   animation: fadeInDown 0.8s ease-out;
 }
 
@@ -505,28 +301,74 @@ $transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 }
 
-.practitioners-container h1:hover {
+.practitioners-container h1:hover,
+.practitioners-container h2:hover {
   transform: scale(1.02);
   transition: transform 0.3s ease;
 }
 
 @media (max-width: 768px) {
-  .practitioners-container h1 {
+  .practitioners-container h1,
+  .practitioners-container h2 {
     font-size: 2rem;
     margin: 1.5rem 0;
     padding: 1rem;
   }
   
-  .practitioners-container h1::after {
+  .practitioners-container h1::after,
+  .practitioners-container h2::after {
     width: 80px;
     height: 2px;
   }
 }
 
 @media (max-width: 480px) {
-  .practitioners-container h1 {
+  .practitioners-container h1,
+  .practitioners-container h2 {
     font-size: 1.75rem;
     margin: 1rem 0;
     padding: 0.75rem;
+  }
+}
+
+
+
+
+
+.uf-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.medecins-list {
+  margin-top: 2rem;
+}
+
+.uf-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.5rem 2rem;
+  width: 300px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    background: #f0f8ff;
+  }
+
+  h3 {
+    margin-top: 0;
+    color: #1976d2;
+  }
+
+  p {
+    margin: 0.5rem 0;
   }
 }
