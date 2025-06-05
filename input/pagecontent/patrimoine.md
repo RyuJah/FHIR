@@ -118,7 +118,7 @@ Cette documentation décrit les profils personnalisés FHIR R5 développés dans
 
 ---
 
-## Version & Conformité
+## Version & Crédits
 
 * FHIR Version : R5
 * Auteur : Rayan Oudbib, Olivier Gibaud, Meriem Chelly
