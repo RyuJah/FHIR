@@ -121,6 +121,6 @@ Cette documentation décrit les profils personnalisés FHIR R5 développés dans
 ## Version & Conformité
 
 * FHIR Version : R5
-* Auteur : Projet ISIS — École d’ingénieurs en e-santé
+* Auteur : Rayan Oudbib, Olivier Gibaud, Meriem Chelly
 * Version du modèle : 1.0.0
 * Date : Juin 2025

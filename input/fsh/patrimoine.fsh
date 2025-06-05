@@ -155,7 +155,9 @@ Description: "Unité fonctionnelle de cardiologie"
 * managingOrganization.reference = "Organization/7"
 * managingOrganization.display = "CHU de Toulouse"
 
-
+// =======================
+// Instance : Service de Pneumologie (Location)
+// =======================
 Instance: ServicePneumologie
 InstanceOf: ISISLocation
 Title: "Service de pneumologie"
